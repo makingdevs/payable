@@ -40,13 +40,32 @@ class ConceptoServiceSpec extends Specification {
       String descripcionConcepto = "concepto no existente"
 
     when: "se Realiza la llamada al servicio que verifica la existencia del concepto"
-      def resultadoBusquedaConcepto = service.verificarConceptoPagoExistente(descripcionConcepto)
-      def conceptoGuardado = service.guardarConceptoDePagoGenerado(organizacion, descripcionConcepto)
+      def conceptoGuardado = service.buscarOSalvarConceptoDePago(organizacion, descripcionConcepto)
 
     then:
-      assert !resultadoBusquedaConcepto
       assert conceptoGuardado.id == 1
       assert conceptoGuardado.descripcion =="concepto no existente"
+  }
+
+  def "No deberia guardar concepto de pago duplicado por institucion"(){
+    given: "Se verificara que el concepto que se recibe no exista en la base de datos"
+      String descripcionConcepto = "concepto no existente"
+
+      def organizacion = new Organizacion()
+      organizacion.nombre = "Escuela primaria de Springfild"
+      organizacion.save()
+
+      Concepto concepto = new Concepto()
+      concepto.descripcion = descripcionConcepto
+      concepto.organizacion = organizacion
+      concepto.save()
+
+    when: "se Realiza la llamada al servicio que verifica la existencia del concepto"
+      def conceptoGuardado = service.buscarOSalvarConceptoDePago(organizacion, descripcionConcepto)
+
+    then:
+      assert conceptoGuardado.id == concepto.id
+      assert conceptoGuardado.descripcion == concepto.descripcion
   }
 
 }

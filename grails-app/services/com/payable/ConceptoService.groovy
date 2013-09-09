@@ -11,15 +11,15 @@ class ConceptoService {
     }
   }
 
-  def verificarConceptoPagoExistente(String descripcionDeConcepto) {
-    Concepto.findByDescripcion(descripcionDeConcepto)
-  }
+  def buscarOSalvarConceptoDePago(Organizacion organizacion, String descripcionDeConcepto) {
+    Concepto concepto = Concepto.findByDescripcion(descripcionDeConcepto) ?: new Concepto()
 
-  def guardarConceptoDePagoGenerado(Organizacion organizacion, String descripcionDeConcepto) {
-    Concepto concepto = new Concepto()
-    concepto.descripcion = descripcionDeConcepto
-    concepto.organizacion = organizacion
-    concepto.save()
+    if(!concepto.id) {
+      concepto.descripcion = descripcionDeConcepto
+      concepto.organizacion = organizacion
+      concepto.save()
+    }
+
     concepto
   }
 
