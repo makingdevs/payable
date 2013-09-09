@@ -18,9 +18,9 @@ class DescuentoServiceSpec extends Specification {
         descuento.fechaDeVencimiento = new Date()
         descuento.organizacion = organizacion
         descuento.save()
-      when: "Se realiza la llamada al metodo buscarDescuentosDeUnaInstitucion"
+      when: "Se realiza la llamada al metodo buscarDescuentosDeUnaOrganizacion"
         def query = "ant"
-        def descuentoInstitucion = service.buscarDescuentosDeUnaInstitucion(organizacion, query)
+        def descuentoInstitucion = service.buscarDescuentosDeUnaOrganizacion([organizacion], query)
       then: "La cantidad de descuentos debe ser igual a 1"
         assert descuentoInstitucion.size() == 1
   }
