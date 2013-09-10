@@ -2,11 +2,11 @@ package com.payable
 
 class DescuentoService {
 
-  def buscarDescuentosDeUnaOrganizacion(List<Organizacion> organizaciones, def query) {
+  def buscarDescuentosDeUnaOrganizacion(Organizacion organizacion, def query) {
 
     Descuento.withCriteria {
       like ('nombreDeDescuento', "%${query}%")
-      'in' ('organizacion', organizaciones)
+      eq ('organizacion', organizacion)
     }
   }
 

@@ -26,7 +26,7 @@ class ConceptoServiceSpec extends Specification {
         def query = "giat"
 
       when: "Se realiza la llamada al metodo buscarConceptosDeUnaInstitucion"
-        def conceptoInstitucion = service.buscarConceptosDeUnaInstitucion([organizacion], query)
+        def conceptoInstitucion = service.buscarConceptosDeUnaInstitucion(organizacion, query)
 
       then: "la cantidad de conceptos debe de ser igual a 2"
         assert conceptoInstitucion.size() == 2

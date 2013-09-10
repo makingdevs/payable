@@ -4,10 +4,10 @@ class ConceptoService {
 
   static transactional = true
 
-  def buscarConceptosDeUnaInstitucion(List<Organizacion> organizaciones, def query) {
+  def buscarConceptosDeUnaInstitucion(Organizacion organizacion, def query) {
     Concepto.withCriteria {
       like('descripcion', "%${query}%" )
-      'in'('organizacion', organizaciones)
+      eq ('organizacion', organizacion)
     }
   }
 
