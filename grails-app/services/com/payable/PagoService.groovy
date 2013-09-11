@@ -33,7 +33,7 @@ class PagoService {
   }
 
   private def obtenerPagosDeUsuario(def usuario, Closure closure) {
-    def pagos = usuario.pagos
+    def pagos = findPagosInUsuario(usuario)
     def pagosResult = pagos.findAll { pago ->
       closure.call( pago )
     }
@@ -43,6 +43,10 @@ class PagoService {
   private def getFirstAndLastDayOfMonth() {
     Calendar calendar = Calendar.getInstance()
     [calendar.getActualMinimum(Calendar.DATE), calendar.getActualMaximum(Calendar.DATE)]
+  }
+
+  private def findPagosInUsuario(usuario) {
+    []
   }
 
 }
