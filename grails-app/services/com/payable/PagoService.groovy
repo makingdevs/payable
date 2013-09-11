@@ -40,13 +40,6 @@ class PagoService {
     pagosResult
   }
 
-  private def obtenerPagosConciliadosFavorablemente(def usuario) {
-    def pagos = usuario.pagos
-    (minimum, maximum) = getFirstAndLastDayOfMonth()
-    def pagosConciliadosFavorablemente = pagos.findAll 
-    pagosConciliadosFavorablemente
-  }
-
   private def getFirstAndLastDayOfMonth() {
     Calendar calendar = Calendar.getInstance()
     [calendar.getActualMinimum(Calendar.DATE), calendar.getActualMaximum(Calendar.DATE)]
