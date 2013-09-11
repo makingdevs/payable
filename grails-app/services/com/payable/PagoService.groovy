@@ -23,45 +23,27 @@ class PagoService {
   }
 
   def estadoDeCuentaUsuario(def usuario) {
+    (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
-      pagosVencidos:obtenerPagosVencidos(usuario),
-      pagosEnTiempo:obtenerPagosDeUsuarioEnTiempoConDescuento(usuario,"EnTiempoConDescuento"),
-      pagosPorRealizar:obtenerPagosDeUsuarioEnTiempoSinDescuento(usuario,"EnTiempoSinDescuento"),
-      pagoMensual:obtenerPagosConciliadosFavorablemente(usuario)
+      pagosVencidos   : obtenerPagosDeUsuario(usuario, { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO } ), // pagosVencidos
+      pagosEnTiempo   : obtenerPagosDeUsuario(usuario, { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pagos.descuentos } ), // pagosDeUsuarioEnTiempoConDescuento
+      pagosPorRealizar: obtenerPagosDeUsuario(usuario, { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pagos.descuentos } ), // pagosDeUsuarioEnTiempoSinDescuento
+      pagoMensual     : obtenerPagosDeUsuario(usuario, { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO } ) // pagosConciliadosFavorablemente
     ]
   }
 
-  private def obtenerPagosVencidos(def usuario) {
+  private def obtenerPagosDeUsuario(def usuario, Closure closure) {
     def pagos = usuario.pagos
-    def pagosVencidos = pagos.findAll { pago ->
-      pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO
+    def pagosResult = pagos.findAll { pago ->
+      closure.call( pago )
     }
-    pagosVencidos
-  }
-
-  private def obtenerPagosDeUsuarioEnTiempoConDescuento(def usuario) {
-    def pagos = usuario.pagos
-    def pagosEnTiempoConDescuento = pagos.findAll { pago ->
-      pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pagos.descuentos
-    }
-    pagosEnTiempoConDescuento
-  }
-
-  private def obtenerPagosDeUsuarioEnTiempoSinDescuento(def usuario) {
-    def pagos = usuario.pagos
-    def pagosEnTiempoSinDescuento = pagos.findAll { pago ->
-      pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pagos.descuentos
-    }
-    pagosEnTiempoSinDescuento
+    pagosResult
   }
 
   private def obtenerPagosConciliadosFavorablemente(def usuario) {
     def pagos = usuario.pagos
     (minimum, maximum) = getFirstAndLastDayOfMonth()
-    def pagosConciliadosFavorablemente = pagos.findAll { pago ->
-      pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO
-
-    }
+    def pagosConciliadosFavorablemente = pagos.findAll 
     pagosConciliadosFavorablemente
   }
 
