@@ -1,5 +1,7 @@
 package com.payable
 
+import java.lang.reflect.ParameterizedType
+
 class PagoService {
 
   def esquemaDePagoService
@@ -23,30 +25,37 @@ class PagoService {
   }
 
   def estadoDeCuentaUsuario(def usuario) {
-    (minimum, maximum) = getFirstAndLastDayOfMonth()
+    def pagos = findAllPagosInUsuario(usuario)
+    def (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
-      pagosVencidos   : obtenerPagosDeUsuario(usuario, { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO } ), // pagosVencidos
-      pagosEnTiempo   : obtenerPagosDeUsuario(usuario, { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pagos.descuentos } ), // pagosDeUsuarioEnTiempoConDescuento
-      pagosPorRealizar: obtenerPagosDeUsuario(usuario, { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pagos.descuentos } ), // pagosDeUsuarioEnTiempoSinDescuento
-      pagoMensual     : obtenerPagosDeUsuario(usuario, { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO } ) // pagosConciliadosFavorablemente
+      pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
+      pagosEnTiempo    : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pago.descuentos }, // pagosDeUsuarioEnTiempoConDescuento
+      pagosPorRealizar : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pago.descuentos }, // pagosDeUsuarioEnTiempoSinDescuento
+      pagoMensual      : pagos.findAll { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO } // pagosConciliadosFavorablemente
     ]
   }
 
-  private def obtenerPagosDeUsuario(def usuario, Closure closure) {
-    def pagos = findPagosInUsuario(usuario)
-    def pagosResult = pagos.findAll { pago ->
-      closure.call( pago )
+  private def findAllPagosInUsuario(def usuario) {
+    if(usuario instanceof Payable)
+        return usuario.pagos
+    
+    def relationships = usuario.properties.findAll { k, v -> v instanceof List }
+    def pagos = []
+    
+    relationships.each { k, v ->
+        def field = usuario.class.getDeclaredField( k )
+        ParameterizedType pt = (ParameterizedType) field.getGenericType()
+        Class<?> payableListClass = (Class<?>) pt.getActualTypeArguments().first()
+        if( payableListClass in Payable )
+            pagos = v*.pagos.flatten()
     }
-    pagosResult
+    
+    pagos
   }
 
   private def getFirstAndLastDayOfMonth() {
     Calendar calendar = Calendar.getInstance()
     [calendar.getActualMinimum(Calendar.DATE), calendar.getActualMaximum(Calendar.DATE)]
-  }
-
-  private def findPagosInUsuario(usuario) {
-    []
   }
 
 }
