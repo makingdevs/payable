@@ -98,7 +98,7 @@ class GeneracionDePagoService {
     cal.setTime(fechaDeVencimiento)
     def month = cal.get(Calendar.MONTH)
 
-    pagoDoble.contains(month.toString())
+    pagoDoble.contains(month)
   }
 
 }

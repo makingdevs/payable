@@ -14,7 +14,7 @@ class GeneracionDePagoServiceSpec extends Specification {
           cantidadDePago : cantidadDePago,
           descuentoIds : [],
           pagoDoble : [],
-          fechaDeVencimiento : new Date() + 7,
+          fechaDeVencimiento : fechaDeVencimiento,
           organizacion : new Organizacion().save(validate:false),
           payables : [new Payable()]
         )
@@ -49,7 +49,7 @@ class GeneracionDePagoServiceSpec extends Specification {
           descuentoIds : descuentoIds,
           pagoDoble : [],
           meses : [],
-          fechaDeVencimiento : new Date() + 7,
+          fechaDeVencimiento : fechaDeVencimiento,
           organizacion : organizacion,
           payables : [new Payable()]
         )
@@ -94,7 +94,7 @@ class GeneracionDePagoServiceSpec extends Specification {
           pagoDoble : [],
           recargoId : recargoId,
           meses : [],
-          fechaDeVencimiento : new Date() + 7,
+          fechaDeVencimiento : fechaDeVencimiento,
           organizacion : organizacion,
           payables : [new Payable()]
         )
@@ -138,7 +138,7 @@ class GeneracionDePagoServiceSpec extends Specification {
           descuentoIds : [],
           pagoDoble : [],
           meses : meses,
-          fechaDeVencimiento : new Date() + 7,
+          fechaDeVencimiento : fechaDeVencimiento,
           organizacion : organizacion,
           payables : [new Payable()]
         )
@@ -162,6 +162,44 @@ class GeneracionDePagoServiceSpec extends Specification {
     where : 
       conceptoDePago   | cantidadDePago | fechaDeVencimiento | meses
       "conceptoDePago" | 100.00         | new Date() + 7     | [1,3,5,10]
+  }
+
+  def "Generar un talonario de pagos con pagos doble para una camada"() {
+    setup: "creando organizacion"
+      def organizacion = new Organizacion()
+      organizacion.save(validate:false)
+
+      GrupoPagoCommand grupoPagoCommand = new GrupoPagoCommand(
+          conceptoDePago : conceptoDePago,
+          cantidadDePago : cantidadDePago,
+          descuentoIds : [],
+          pagoDoble : pagoDoble,
+          meses : meses,
+          fechaDeVencimiento : fechaDeVencimiento,
+          organizacion : organizacion,
+          payables : [new Payable()]
+        )
+
+    and :
+      def conceptoServiceMock = createConceptoServiceMock()
+      service.conceptoService = conceptoServiceMock.createMock()
+
+    when : 
+      def pagos = service.generaPagoParaGrupo(grupoPagoCommand)
+
+    then :
+      assert pagos.size() == 6
+      assert pagos.first().id == 1
+      pagos.each { pago ->
+        if( pagoDoble.contains( pago.fechaDeVencimiento.getMonth() ) )
+          assert pago.cantidadDePago == 200.00
+        else
+          assert pago.cantidadDePago == 100.00
+      }
+
+    where : 
+      conceptoDePago   | cantidadDePago | fechaDeVencimiento | meses       | pagoDoble
+      "conceptoDePago" | 100.00         | new Date() + 7     | [1,3,5,7,9] | [1,5,9]
   }
 
 
