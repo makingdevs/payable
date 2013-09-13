@@ -7,7 +7,7 @@ class GeneracionDePagoService {
   def generaPagoParaGrupo( GrupoPagoCommand grupoPagoCommand ) {
     conceptoService.buscarOSalvarConceptoDePago(grupoPagoCommand.organizacion, grupoPagoCommand.conceptoDePago)
 
-    def listaDeDescuentosParaAplicar = Descuento.getAll(descuentoIds)
+    def listaDeDescuentosParaAplicar = Descuento.getAll(grupoPagoCommand.descuentoIds)
     def descuentos = []
 
     listaDeDescuentosParaAplicar.each { descuentoParaAplicar ->
@@ -25,7 +25,7 @@ class GeneracionDePagoService {
     }
 
     def pagos = []
-    payables.each { payable ->
+    grupoPagoCommand.payables.each { payable ->
       def payments = generarPagosParaPayable(payable, grupoPagoCommand, descuentos)
       payments.each { payment ->
         payable.addToPagos(payment)
@@ -76,7 +76,7 @@ class GeneracionDePagoService {
       pago.conceptoDePago = grupoPagoCommand.conceptoDePago
       pago.cantidadDePago = grupoPagoCommand.cantidadDePago
 
-      if (esPagoDobleEsteMes(grupoPagoCommand, fechaDeVencimiento)) 
+      if (esPagoDobleEsteMes(grupoPagoCommand.pagoDoble, fechaDeVencimiento))
         pago.cantidadDePago *= 2
 
       pago.fechaDeVencimiento = fechaDeVencimiento
@@ -108,8 +108,8 @@ class GeneracionDePagoService {
 class GrupoPagoCommand {
 
   Long recargoId
+  BigDecimal cantidadDePago
   String conceptoDePago
-  String cantidadDePago
   Date fechaDeVencimiento
 
   List<Long> descuentoIds 
