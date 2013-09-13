@@ -11,7 +11,7 @@ class GeneracionDePagoService {
     def descuentos = []
 
     listaDeDescuentosParaAplicar.each { descuentoParaAplicar ->
-      fechasDescuentos = obtenerFechas(meses, descuentoParaAplicar.fechaDeVencimiento)
+      def fechasDescuentos = obtenerFechas(grupoPagoCommand.meses, descuentoParaAplicar.fechaDeVencimiento)
       fechasDescuentos.each { fecha ->
         Descuento descuento = new Descuento()
         descuento.nombreDeDescuento = descuentoParaAplicar.nombreDeDescuento
@@ -84,11 +84,9 @@ class GeneracionDePagoService {
       descuentos.each { descuento ->
         pago.addToDescuentos(descuento)
       }
-  
-      if (recargo)
-        pago.addToRecargos(recargo)
-  
+      pago.recargo = recargo
       pago.save()
+
       pagos.add(pago)
     }
 
