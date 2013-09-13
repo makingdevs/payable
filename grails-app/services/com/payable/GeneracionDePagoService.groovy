@@ -4,33 +4,29 @@ class GeneracionDePagoService {
 
   def conceptoService
 
-  def serviceMethod( Organizacion organizacion,
-                     String conceptoDePago,
-                     Set<Payable> payables,
-                     List<Long> descuentoIds,
-                     def meses = []) {
-    conceptoService.buscarOSalvarConceptoDePago(organizacion, conceptoDePago)
+  def generaPagoParaGrupo( GrupoPagoCommand grupoPagoCommand ) {
+    conceptoService.buscarOSalvarConceptoDePago(grupoPagoCommand.organizacion, grupoPagoCommand.conceptoDePago)
 
     def listaDeDescuentosParaAplicar = Descuento.getAll(descuentoIds)
     def descuentos = []
 
-    listaDeDescuentosParaAplicar.each { descuento ->
-      fechasDescuentos = obtenerFechas(meses, descuento.fechaDeVencimiento)
+    listaDeDescuentosParaAplicar.each { descuentoParaAplicar ->
+      fechasDescuentos = obtenerFechas(meses, descuentoParaAplicar.fechaDeVencimiento)
       fechasDescuentos.each { fecha ->
-        Descuento desc = new Descuento()
-        desc.nombreDeDescuento = descuento.nombreDeDescuento
-        desc.porcentaje = descuento?.porcentaje
-        desc.cantidad = descuento?.cantidad
-        desc.fechaDeVencimiento = fecha
-        desc.institucion = descuento.institucion
-        desc.save()
-        descuentos << desc
+        Descuento descuento = new Descuento()
+        descuento.nombreDeDescuento = descuentoParaAplicar.nombreDeDescuento
+        descuento.porcentaje = descuentoParaAplicar?.porcentaje
+        descuento.cantidad = descuentoParaAplicar?.cantidad
+        descuento.fechaDeVencimiento = fecha
+        descuento.organizacion = descuentoParaAplicar.organizacion
+        descuento.save()
+        descuentos << descuento
       }
     }
 
     def pagos = []
     payables.each { payable ->
-      def payments = generarPagoParaDependienteConCommand(payable, command, descuentos)
+      def payments = generarPagosParaPayable(payable, grupoPagoCommand, descuentos)
       payments.each { payment ->
         payable.addToPagos(payment)
         pagos << payment
@@ -41,13 +37,12 @@ class GeneracionDePagoService {
 
   }
 
-  private def obtenerFechas(def meses, Date fechaDeVencimiento, Closure closure = null) {
+  private def obtenerFechas(def meses, Date fechaDeVencimiento) {
     def fechas = []
 
     Calendar cal = Calendar.getInstance()
     cal.setTime(fechaDeVencimiento)
-
-    closure?.call( fechas, fechaDeVencimiento )
+    fechas.add(fechaDeVencimiento)
 
     def year = cal.get(Calendar.YEAR)
     def month = cal.get(Calendar.MONTH)
@@ -66,22 +61,22 @@ class GeneracionDePagoService {
     fechas
   }
 
-  private def generarPagosParaPayable(Payable payable, def command, List descuentos) {
-    def recargo = Recargo.get(command.recargoId)
-    generatePaymentBook(command, recargo, descuentos)
+  private def generarPagosParaPayable(Payable payable, GrupoPagoCommand grupoPagoCommand, List descuentos) {
+    def recargo = Recargo.get(grupoPagoCommand.recargoId)
+    generatePaymentBook(grupoPagoCommand, recargo, descuentos)
   }
 
-  private def generatePaymentBook(command, recargo, descuentos) {
-    def meses = command.meses
+  private def generatePaymentBook(GrupoPagoCommand grupoPagoCommand, recargo, descuentos) {
+    def meses = grupoPagoCommand.meses
     def pagos = []
-    def fechasDeVencimiento = obtenerFechas(meses, command.fechaDeVencimiento, { fechas, vencimiento -> fechas << vencimiento } )
+    def fechasDeVencimiento = obtenerFechas(meses, grupoPagoCommand.fechaDeVencimiento)
 
     fechasDeVencimiento.each { fechaDeVencimiento ->
       Pago pago = new Pago()
-      pago.conceptoDePago = command.conceptoDePago
-      pago.cantidadDePago = command.cantidadDePago
+      pago.conceptoDePago = grupoPagoCommand.conceptoDePago
+      pago.cantidadDePago = grupoPagoCommand.cantidadDePago
 
-      if (esPagoDobleEsteMes(command, fechaDeVencimiento)) 
+      if (esPagoDobleEsteMes(grupoPagoCommand, fechaDeVencimiento)) 
         pago.cantidadDePago *= 2
 
       pago.fechaDeVencimiento = fechaDeVencimiento
@@ -107,5 +102,22 @@ class GeneracionDePagoService {
 
     pagoDoble.contains(month.toString())
   }
+
+}
+
+class GrupoPagoCommand {
+
+  Long recargoId
+  String conceptoDePago
+  String cantidadDePago
+  Date fechaDeVencimiento
+
+  List<Long> descuentoIds 
+
+  Organizacion organizacion
+  Set<Payable> payables
+
+  def meses = []
+  def pagoDoble = []
 
 }
