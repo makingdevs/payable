@@ -1,5 +1,8 @@
 package com.payable
 
+import com.makingdevs.Direccion
+import com.makingdevs.Telefono
+
 class Organizacion {
 
   String nombre
