@@ -26,6 +26,7 @@ class PagoService {
 
   def estadoDeCuentaUsuario(def usuario) {
     def pagos = findAllPagosInUsuario(usuario)
+    log.debug pagos
     def (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
       pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
@@ -39,15 +40,20 @@ class PagoService {
     if(usuario instanceof Payable)
         return usuario.pagos
     
-    def relationships = usuario.properties.findAll { k, v -> v instanceof List }
+    def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
     def pagos = []
     
     relationships.each { k, v ->
+      try {
         def field = usuario.class.getDeclaredField( k )
         ParameterizedType pt = (ParameterizedType) field.getGenericType()
         Class<?> payableListClass = (Class<?>) pt.getActualTypeArguments().first()
-        if( payableListClass in Payable )
-            pagos = v*.pagos.flatten()
+        if( payableListClass in Payable ) {
+          pagos = v*.pagos.flatten()
+        }
+      } catch(NoSuchFieldException nsfe) {
+        log.info nsfe
+      }
     }
     
     pagos

@@ -63,6 +63,7 @@ class PagoServiceSpec extends Specification {
         fechaDeVencimiento : new Date() + 7,
         cantidadDePago : 100,
         conceptoDePago : "concepto")
+
       Dependiente dependiente = new Dependiente(pagos:[pago])
       Usuario usuario = new Usuario(dependientes:[dependiente])
 
@@ -100,7 +101,7 @@ class PagoServiceSpec extends Specification {
   private class Dependiente extends Payable {  }
 
   private class Usuario {
-    List<Dependiente> dependientes = []
+    Set<Dependiente> dependientes = []
   }
 
   private class User extends Payable { }
