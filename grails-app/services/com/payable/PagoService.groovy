@@ -15,7 +15,11 @@ class PagoService {
       conceptoDePago:esquemaDePago.concepto.descripcion,
       descuentoAplicable:descuentoAplicable,
       recargo:esquemaDePago.recargo)
-    pago.descuentos = esquemaDePago.descuentos
+
+    esquemaDePago.descuentos.each { descuento ->
+      pago.addToDescuentos( descuento )
+    }
+
     pago.save()
     pago
   }
@@ -61,7 +65,14 @@ class PagoService {
 
   private def getFirstAndLastDayOfMonth() {
     Calendar calendar = Calendar.getInstance()
-    [calendar.getActualMinimum(Calendar.DATE), calendar.getActualMaximum(Calendar.DATE)]
+
+    Calendar primerDiaDelMes = Calendar.getInstance()
+    primerDiaDelMes.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DATE))
+
+    Calendar ultimoDiaDelMes = Calendar.getInstance()
+    ultimoDiaDelMes.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE))
+
+    [primerDiaDelMes.time, ultimoDiaDelMes.time]
   }
 
 }
