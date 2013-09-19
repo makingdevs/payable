@@ -41,9 +41,6 @@ class PagoService {
   }
 
   private def findAllPagosInUsuario(def usuario) {
-    if(usuario instanceof Payable)
-        return usuario.pagos
-    
     def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
     def pagos = []
     
