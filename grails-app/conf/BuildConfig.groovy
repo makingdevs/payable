@@ -2,6 +2,10 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
+grails.project.repos.md.url = "http://makingdevs.com:8081/nexus/content/repositories/thirdparty"
+grails.project.repos.md.username = "deployment"
+grails.project.repos.md.password = "d3pl0ym3nt"
+
 grails.project.dependency.resolution = {
   // inherit Grails' default dependencies
   inherits("global") {

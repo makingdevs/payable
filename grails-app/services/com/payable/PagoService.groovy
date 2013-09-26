@@ -15,7 +15,11 @@ class PagoService {
       conceptoDePago:esquemaDePago.concepto.descripcion,
       descuentoAplicable:descuentoAplicable,
       recargo:esquemaDePago.recargo)
-    pago.descuentos = esquemaDePago.descuentos
+
+    esquemaDePago.descuentos.each { descuento ->
+      pago.addToDescuentos( descuento )
+    }
+
     pago.save()
     pago
   }
@@ -26,6 +30,7 @@ class PagoService {
 
   def estadoDeCuentaUsuario(def usuario) {
     def pagos = findAllPagosInUsuario(usuario)
+    log.debug pagos
     def (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
       pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
@@ -36,18 +41,20 @@ class PagoService {
   }
 
   private def findAllPagosInUsuario(def usuario) {
-    if(usuario instanceof Payable)
-        return usuario.pagos
-    
-    def relationships = usuario.properties.findAll { k, v -> v instanceof List }
+    def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
     def pagos = []
     
     relationships.each { k, v ->
+      try {
         def field = usuario.class.getDeclaredField( k )
         ParameterizedType pt = (ParameterizedType) field.getGenericType()
         Class<?> payableListClass = (Class<?>) pt.getActualTypeArguments().first()
-        if( payableListClass in Payable )
-            pagos = v*.pagos.flatten()
+        if( payableListClass in Payable ) {
+          pagos = v*.pagos.flatten()
+        }
+      } catch(NoSuchFieldException nsfe) {
+        log.info nsfe
+      }
     }
     
     pagos
@@ -55,7 +62,14 @@ class PagoService {
 
   private def getFirstAndLastDayOfMonth() {
     Calendar calendar = Calendar.getInstance()
-    [calendar.getActualMinimum(Calendar.DATE), calendar.getActualMaximum(Calendar.DATE)]
+
+    Calendar primerDiaDelMes = Calendar.getInstance()
+    primerDiaDelMes.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DATE))
+
+    Calendar ultimoDiaDelMes = Calendar.getInstance()
+    ultimoDiaDelMes.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE))
+
+    [primerDiaDelMes.time, ultimoDiaDelMes.time]
   }
 
 }
