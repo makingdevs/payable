@@ -7,7 +7,7 @@ class GrupoPagoCommand {
   String conceptoDePago
   Date fechaDeVencimiento
 
-  List<Long> descuentoIds 
+  List<Long> descuentoIds
 
   Organizacion organizacion
   Set<Payable> payables

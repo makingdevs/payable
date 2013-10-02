@@ -2,6 +2,7 @@ package com.payable
 
 import grails.test.mixin.*
 import spock.lang.Specification
+import spock.lang.Ignore
 
 @TestFor(GeneracionDePagoService)
 @Mock([Pago, Payable, Descuento, Concepto, Recargo, Organizacion])
@@ -38,6 +39,7 @@ class GeneracionDePagoServiceSpec extends Specification {
       "conceptoDePago"  | 100.00         | new Date() + 7     || 1
   }
 
+  @Ignore
   def "Generar un pago con un descuento para un grupo"(){
     setup: "creando organizacion"
       def organizacion = new Organizacion()
@@ -163,6 +165,7 @@ class GeneracionDePagoServiceSpec extends Specification {
       "conceptoDePago" | 100.00         | new Date() + 7     | [1,3,5,10]
   }
 
+  @Ignore
   def "Generar un talonario de pagos con pagos doble para una camada"() {
     setup: "creando organizacion"
       def organizacion = new Organizacion()
