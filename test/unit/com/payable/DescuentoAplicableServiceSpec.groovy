@@ -35,22 +35,31 @@ class DescuentoAplicableServiceSpec extends Specification {
 
   def "Generar descuentos aplicados de un esquema de pago"() {
     given:
-      def descuento1 = new Descuento().save(validate:false)
-      def descuento2 = new Descuento().save(validate:false)
+      def descuentos = crearDescuentos(_diasParaCancelar)
       def esquemaDePago = new EsquemaDePago().save(validate:false)
-      esquemaDePago.addToDescuentos(descuento1).addToDescuentos(descuento2)
+      descuentos.each { d -> esquemaDePago.addToDescuentos(d)}
       esquemaDePago.save(validate:false)
-      def fechaDeReferencia = (new Date() + 30)
+      def fechaDeReferencia = Date.parse("dd/MM/yyyy",_fechaDeReferencia)
     when:
       def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia)
     then:
-      descuentosAplicables.size() ==  2
+      descuentosAplicables.size() ==  _fechasEsperadas.size()
       descuentosAplicables.every { da -> da.status == DescuentoAplicableStatus.VIGENTE }
+      descuentosAplicables*.fechaDeExpiracion*.format("dd/MM/yyyy").sort() == _fechasEsperadas.sort()
+    where:
+      _fechaDeReferencia | _diasParaCancelar || _fechasEsperadas
+      "30/10/2013"       | [7]               || ["23/10/2013"]
+      "30/10/2013"       | [7,14]            || ["23/10/2013","16/10/2013"]
+      "25/10/2013"       | [7,14,21]         || ["04/10/2013","11/10/2013","18/10/2013"]
   }
 
 	def "Agregar un descuento aplicado a un pago"() {
 
 	}
+
+  private def crearDescuentos(def diasParaCancelar){
+    diasParaCancelar.collect { d -> new Descuento(diasPreviosParaCancelarDescuento:d) }
+  }
   
   private def aleatorioDe(int n){
     new Random().nextInt(n)

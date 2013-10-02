@@ -13,8 +13,8 @@ class DescuentoAplicableService {
   def generarParaPagoConEsquemaDePagoConFechaReferencia(Long esquemaDePagoId, Date fechaReferencia){
     def descuentosAplicables = []
     EsquemaDePago esquemaDePago = EsquemaDePago.get(esquemaDePagoId)
-    esquemaDePago.descuentos.each{
-      descuentosAplicables << new DescuentoAplicable()
+    esquemaDePago.descuentos.each{ d ->
+      descuentosAplicables << new DescuentoAplicable(fechaDeExpiracion:(fechaReferencia - d.diasPreviosParaCancelarDescuento))
     }
     descuentosAplicables
   }
