@@ -46,6 +46,7 @@ class DescuentoAplicableServiceSpec extends Specification {
       descuentosAplicables.size() ==  _fechasEsperadas.size()
       descuentosAplicables.every { da -> da.status == DescuentoAplicableStatus.VIGENTE }
       descuentosAplicables*.fechaDeExpiracion*.format("dd/MM/yyyy").sort() == _fechasEsperadas.sort()
+      descuentosAplicables*.descuento*.diasPreviosParaCancelarDescuento.sort() == _diasParaCancelar.sort()
     where:
       _fechaDeReferencia | _diasParaCancelar || _fechasEsperadas
       "30/10/2013"       | [7]               || ["23/10/2013"]
@@ -58,7 +59,7 @@ class DescuentoAplicableServiceSpec extends Specification {
 	}
 
   private def crearDescuentos(def diasParaCancelar){
-    diasParaCancelar.collect { d -> new Descuento(diasPreviosParaCancelarDescuento:d) }
+    diasParaCancelar.collect { d -> new Descuento(diasPreviosParaCancelarDescuento:d).save(validate:false) }
   }
   
   private def aleatorioDe(int n){

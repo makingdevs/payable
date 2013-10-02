@@ -14,7 +14,10 @@ class DescuentoAplicableService {
     def descuentosAplicables = []
     EsquemaDePago esquemaDePago = EsquemaDePago.get(esquemaDePagoId)
     esquemaDePago.descuentos.each{ d ->
-      descuentosAplicables << new DescuentoAplicable(fechaDeExpiracion:(fechaReferencia - d.diasPreviosParaCancelarDescuento))
+      descuentosAplicables << new DescuentoAplicable(
+        fechaDeExpiracion:(fechaReferencia - d.diasPreviosParaCancelarDescuento),
+        descuento:d
+      )
     }
     descuentosAplicables
   }
