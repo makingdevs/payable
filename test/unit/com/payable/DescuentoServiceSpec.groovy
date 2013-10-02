@@ -16,7 +16,6 @@ class DescuentoServiceSpec extends Specification {
         def descuento = new Descuento()
         descuento.nombreDeDescuento = "Pago anticipado"
         descuento.porcentaje = 10
-        descuento.fechaDeVencimiento = new Date()
         descuento.organizacion = organizacion
         descuento.save()
       when: "Se realiza la llamada al metodo buscarDescuentosDeUnaOrganizacion"
@@ -26,26 +25,4 @@ class DescuentoServiceSpec extends Specification {
         assert descuentoInstitucion.size() == 1
   }
 
-  def "Obtener pagos con descuento expirado"(){
-    given:
-      def fechaDePrueba = new Date() - 7
-      def descuentoVencido = new Descuento(diasPreviosParaCancelarDescuento:7).save(validate:false)
-      def p1 = new Pago(fechaDeVencimiento:fechaDePrueba).save(validate:false)
-      def p2 = new Pago(fechaDeVencimiento:fechaDePrueba).save(validate:false)
-      def p3 = new Pago(fechaDeVencimiento:new Date()).save(validate:false)
-      p1.addToDescuentos(descuentoVencido).save(validate:false)
-      p2.addToDescuentos(descuentoVencido).save(validate:false)
-    when:
-      def pagos = service.buscarPagosConDescuentosVencidos()
-    then:
-      pagos*.id == [1,2]
-      pagos.every { pago -> pago.estatusDePago == EstatusDePago.CREADO }
-      pagos.every { pago -> 
-        pago.fechaDeVencimiento.date == fechaDePrueba.date &&
-        pago.fechaDeVencimiento.month == fechaDePrueba.month &&
-        pago.fechaDeVencimiento.year == fechaDePrueba.year 
-      }
-      Descuento.list().size() == 1
-      Pago.list().size == 3
-  }
 }

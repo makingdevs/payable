@@ -34,8 +34,8 @@ class PagoService {
     def (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
       pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
-      pagosEnTiempo    : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pago.descuentos }, // pagosDeUsuarioEnTiempoConDescuento
-      pagosPorRealizar : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pago.descuentos }, // pagosDeUsuarioEnTiempoSinDescuento
+      pagosEnTiempo    : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pago.descuentosAplicables }, // pagosDeUsuarioEnTiempoConDescuento
+      pagosPorRealizar : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pago.descuentosAplicables }, // pagosDeUsuarioEnTiempoSinDescuento
       pagoMensual      : pagos.findAll { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO } // pagosConciliadosFavorablemente
     ]
   }

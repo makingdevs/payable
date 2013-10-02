@@ -29,7 +29,7 @@ class GeneracionDePagoServiceSpec extends Specification {
     then :
       assert pagos.size() == size
       assert pagos.first().id > 0
-      assert !pagos.first().descuentos
+      assert !pagos.first().descuentosAplicables
       assert pagos.first().conceptoDePago == conceptoDePago
       assert pagos.first().cantidadDePago == cantidadDePago
 
@@ -58,7 +58,6 @@ class GeneracionDePagoServiceSpec extends Specification {
       Descuento descuento = new Descuento()
       descuento.nombreDeDescuento = "descuento 1"
       descuento.cantidad = 10
-      descuento.fechaDeVencimiento = new Date() + 3
       descuento.organizacion = organizacion
       descuento.save(validate:false)
 
@@ -73,9 +72,9 @@ class GeneracionDePagoServiceSpec extends Specification {
       assert conceptoServiceMock.verify() == null
       assert pagos.size() == 1
       assert pagos.first().id > 0
-      assert pagos.first().descuentos
-      assert pagos.first().descuentos.first().id > 0
-      assert pagos.first().descuentos.first().cantidad == 10
+      assert pagos.first().descuentosAplicables
+      assert pagos.first().descuentosAplicables.first().id > 0
+      assert pagos.first().descuentosAplicables.first().cantidad == 10
 
     where :
       conceptoDePago | cantidadDePago | fechaDeVencimiento | descuentoIds
@@ -117,7 +116,7 @@ class GeneracionDePagoServiceSpec extends Specification {
       assert conceptoServiceMock.verify() == null
       assert pagos.size() == 1
       assert pagos.first().id > 0
-      assert !pagos.first().descuentos
+      assert !pagos.first().descuentosAplicables
       assert pagos.first().recargo
       assert pagos.first().recargo.cantidad == cantidadDeRecargo
       
@@ -154,7 +153,7 @@ class GeneracionDePagoServiceSpec extends Specification {
       assert conceptoServiceMock.verify() == null
       assert pagos.size() == 5
       assert pagos.first().id > 0
-      assert !pagos.first().descuentos
+      assert !pagos.first().descuentosAplicables
       assert !pagos.first().recargo
       assert pagos.first().conceptoDePago == conceptoDePago
       assert pagos.first().cantidadDePago == cantidadDePago 
