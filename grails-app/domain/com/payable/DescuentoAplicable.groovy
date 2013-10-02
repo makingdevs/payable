@@ -13,5 +13,6 @@ class DescuentoAplicable {
   static belongsTo = [pago:Pago]
 
   static constraints = {
+    fechaDeVencimiento nullable:false
   }
 }

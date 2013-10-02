@@ -5,7 +5,7 @@ enum DescuentoAplicableStatus {
   EXPIRADO("Vencido")
 
   final String value
-  EstatusDePago(String value){ this.value = value }
+  DescuentoAplicableStatus(String value){ this.value = value }
 
   String toString(){ value }
   String getKey(){ name() }
