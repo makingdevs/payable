@@ -18,4 +18,12 @@ class DescuentoAplicableService {
     }
     descuentosAplicables
   }
+
+  Pago agregarDescuentoAplicableAUnPago(DescuentoAplicable descuentoAplicable, Long pagoId){
+    Pago pago = Pago.get(pagoId)
+    pago.descuentoAplicable += pago.cantidadDePago / 100 * descuentoAplicable.descuento.porcentaje
+    pago.addToDescuentosAplicables(descuentoAplicable)
+    pago.save()
+    pago
+  }
 }

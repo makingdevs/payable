@@ -7,7 +7,7 @@ import spock.lang.Unroll
 import spock.lang.Ignore
 
 @TestFor(DescuentoAplicableService)
-@Mock([Descuento,EsquemaDePago])
+@Mock([Descuento,EsquemaDePago,Pago,DescuentoAplicable])
 class DescuentoAplicableServiceSpec extends Specification {
 
   @Unroll("Generar un descuento con fecha de vencimiento #_fechaDeExpiracion y porcentaje del #_porcentaje % ")
@@ -55,7 +55,16 @@ class DescuentoAplicableServiceSpec extends Specification {
   }
 
 	def "Agregar un descuento aplicado a un pago"() {
-
+    given:
+      def pago = new Pago(cantidadDePago:100).save(validate:false)
+      def descuento = new Descuento(porcentaje:10).save(validate:false)
+      def descuentoAplicable = new DescuentoAplicable(descuento:descuento).save(validate:false,descuento:descuento)
+    when:
+      def pagoEsperado = service.agregarDescuentoAplicableAUnPago(descuentoAplicable,1L)
+    then:
+      pagoEsperado.descuentosAplicables.size() == 1
+      pagoEsperado.cantidadDePago == 100
+      pagoEsperado.descuentoAplicable == 10
 	}
 
   private def crearDescuentos(def diasParaCancelar){
