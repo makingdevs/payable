@@ -17,10 +17,6 @@ class PagoServiceSpec extends Specification {
         recargo:new Recargo(cantidad:recargoAplicable).save(validate:false)
       ).save(validate:false)
 
-      def esquemaDePagoServiceMock = mockFor(EsquemaDePagoService)
-      esquemaDePagoServiceMock.demand.obtenerCantidadDeDescuentoAplicable(1..3) { Long esquemaDePagoId -> descuentoAplicable }
-      service.esquemaDePagoService = esquemaDePagoServiceMock.createMock()
-
     when:
       def pago = service.crearPago(fechaDeVencimiento, 1)
 
