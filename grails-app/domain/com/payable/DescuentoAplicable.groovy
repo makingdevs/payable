@@ -5,7 +5,7 @@ class DescuentoAplicable {
   Date fechaDeExpiracion
   Descuento descuento
 
-  DescuentoAplicableStatus status = DescuentoAplicableStatus.VIGENTE
+  DescuentoAplicableStatus descuentoAplicableStatus = DescuentoAplicableStatus.VIGENTE
 
   Date dateCreated
   Date lastUpdated

@@ -22,7 +22,7 @@ class DescuentoAplicableServiceSpec extends Specification {
     when:
       def descuentoAplicable = service.generarParaPagoConVencimiento(fechaDeExpiracion, 1L)
     then:
-      descuentoAplicable.status == DescuentoAplicableStatus.VIGENTE
+      descuentoAplicable.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE
       descuentoAplicable.descuento.nombreDeDescuento == _nombreDeDescuento
       descuentoAplicable.descuento.porcentaje == _porcentaje
       descuentoAplicable.fechaDeExpiracion.month == fechaDeExpiracion.month
@@ -44,7 +44,7 @@ class DescuentoAplicableServiceSpec extends Specification {
       def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia)
     then:
       descuentosAplicables.size() ==  _fechasEsperadas.size()
-      descuentosAplicables.every { da -> da.status == DescuentoAplicableStatus.VIGENTE }
+      descuentosAplicables.every { da -> da.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE }
       descuentosAplicables*.fechaDeExpiracion*.format("dd/MM/yyyy").sort() == _fechasEsperadas.sort()
       descuentosAplicables*.descuento*.diasPreviosParaCancelarDescuento.sort() == _diasParaCancelar.sort()
     where:
