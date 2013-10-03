@@ -1,4 +1,6 @@
 // configuration for plugin testing - will not be included in the plugin zip
+
+// Agregando reporte de cobertura en XML
 coverage {
   xml = true
 }
