@@ -68,7 +68,6 @@ class EsquemaDePagoServiceSpec extends Specification {
     descuentos.eachWithIndex { d, i ->
       Descuento descuento = new Descuento(d)
       descuento.nombreDeDescuento = "Descuento $i"
-      descuento.fechaDeVencimiento = new Date()
       descuento.save()
       esquemaDePago.addToDescuentos(descuento)
     }

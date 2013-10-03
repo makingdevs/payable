@@ -4,7 +4,7 @@ import grails.test.mixin.*
 import spock.lang.Specification
 
 @TestFor(DescuentoService)
-@Mock([Organizacion, Descuento])
+@Mock([Organizacion, Descuento,Pago])
 class DescuentoServiceSpec extends Specification {
 
     def "Obtener todos los descuentos ligados a una organizacion"() {
@@ -16,7 +16,6 @@ class DescuentoServiceSpec extends Specification {
         def descuento = new Descuento()
         descuento.nombreDeDescuento = "Pago anticipado"
         descuento.porcentaje = 10
-        descuento.fechaDeVencimiento = new Date()
         descuento.organizacion = organizacion
         descuento.save()
       when: "Se realiza la llamada al metodo buscarDescuentosDeUnaOrganizacion"
@@ -25,4 +24,5 @@ class DescuentoServiceSpec extends Specification {
       then: "La cantidad de descuentos debe ser igual a 1"
         assert descuentoInstitucion.size() == 1
   }
+
 }

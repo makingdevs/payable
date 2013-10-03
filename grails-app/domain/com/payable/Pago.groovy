@@ -21,7 +21,7 @@ class Pago {
 
   Recargo recargo
 
-  static hasMany = [descuentos : Descuento]
+  static hasMany = [descuentosAplicables : DescuentoAplicable]
 
   Date dateCreated
   Date lastUpdated
