@@ -1,4 +1,7 @@
 // configuration for plugin testing - will not be included in the plugin zip
+coverage {
+  xml = true
+}
 
 log4j = {
     // Example of changing the log pattern for the default console
