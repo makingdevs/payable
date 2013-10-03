@@ -2,7 +2,7 @@ package com.payable
 
 class DescuentoAplicable {
 
-  Date fechaDeVencimiento
+  Date fechaDeExpiracion
   Descuento descuento
 
   DescuentoAplicableStatus status = DescuentoAplicableStatus.VIGENTE
@@ -13,6 +13,6 @@ class DescuentoAplicable {
   static belongsTo = [pago:Pago]
 
   static constraints = {
-    fechaDeVencimiento nullable:false
+    fechaDeExpiracion nullable:false
   }
 }
