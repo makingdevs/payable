@@ -21,7 +21,6 @@ class PagoServiceSpec extends Specification {
       def pago = service.crearPago(fechaDeVencimiento, 1)
 
     then:
-      assert esquemaDePagoServiceMock.verify() == null
       pago.id > 0
       pago.transactionId
       pago.cantidadDePago == cantidadDePago
@@ -32,7 +31,7 @@ class PagoServiceSpec extends Specification {
       pago.tipoDePago == TipoDePago.TRANSFERENCIA_BANCARIA
       pago.estatusDePago == EstatusDePago.CREADO
       pago.recargosAcumulados == 0
-      pago.descuentoAplicable == descuentoAplicable
+      pago.descuentoAplicable == 0
       pago?.recargo?.cantidad ?: 0 == recargoAplicable
     where:
       fechaDeVencimiento || cantidadDePago | conceptoDePago | descuentoAplicable | recargoAplicable
