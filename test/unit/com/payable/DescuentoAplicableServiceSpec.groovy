@@ -56,15 +56,22 @@ class DescuentoAplicableServiceSpec extends Specification {
 
 	def "Agregar un descuento aplicado a un pago"() {
     given:
-      def pago = new Pago(cantidadDePago:100).save(validate:false)
-      def descuento = new Descuento(porcentaje:10).save(validate:false)
+      def pago = new Pago(cantidadDePago:_cantidadDePago,descuentoAplicable:_descuentoAplicableActual).save(validate:false)
+      def descuento = new Descuento(porcentaje:_porcentaje).save(validate:false)
       def descuentoAplicable = new DescuentoAplicable(descuento:descuento).save(validate:false,descuento:descuento)
     when:
+      def noDescuentosAplicablesIniciales = pago?.descuentosAplicables?.size() ?: 0
       def pagoEsperado = service.agregarDescuentoAplicableAUnPago(descuentoAplicable,1L)
     then:
-      pagoEsperado.descuentosAplicables.size() == 1
-      pagoEsperado.cantidadDePago == 100
-      pagoEsperado.descuentoAplicable == 10
+      pagoEsperado.descuentosAplicables.size() == noDescuentosAplicablesIniciales + 1
+      pagoEsperado.cantidadDePago == _cantidadDePago
+      pagoEsperado.descuentoAplicable == nuevoDescuentoAplicable
+    where:
+      _cantidadDePago | _descuentoAplicableActual | _porcentaje || nuevoDescuentoAplicable
+      100             | 0                         | 10          || 10
+      750             | 100                       | 15          || 212.5
+      3250            | 325                       | 10          || 650
+      3250            | 650                       | 10          || 975
 	}
 
   private def crearDescuentos(def diasParaCancelar){
