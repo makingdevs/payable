@@ -5,7 +5,7 @@ class PagoJob {
   def descuentoAplicableService
 
   static triggers = {
-    cron name: 'myTrigger', cronExpression: "0 0 12 * * ?"
+    cron name: 'myTrigger', cronExpression: "0 0 1 * * ?"
   }
 
   def execute() {
