@@ -5,10 +5,13 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.lang.Ignore
+import spock.lang.Shared
 
 @TestFor(DescuentoAplicableService)
 @Mock([Descuento,EsquemaDePago,Pago,DescuentoAplicable])
 class DescuentoAplicableServiceSpec extends Specification {
+
+  @Shared creaFecha = { n -> (new Date() + n).format("dd/MM/yyyy") }
 
   @Unroll("Generar un descuento con fecha de vencimiento #_fechaDeExpiracion y porcentaje del #_porcentaje % ")
   def "Generar un descuento aplicado con una fecha de vencimiento y un descuento"() {
@@ -33,6 +36,7 @@ class DescuentoAplicableServiceSpec extends Specification {
       "Descuento X"       | aleatorioDe(10) | aleatorioDe(30) | new Date() - aleatorioDe(21)
   }
 
+  @Unroll("Con la fecha de referencia #_fechaDeReferencia y los días antes de expirar #_diasParaCancelar, se aplican #_descuentosAplicados con expiración #_fechasEsperadas")
   def "Generar descuentos aplicados de un esquema de pago"() {
     given:
       def descuentos = crearDescuentos(_diasParaCancelar)
@@ -43,15 +47,18 @@ class DescuentoAplicableServiceSpec extends Specification {
     when:
       def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia)
     then:
-      descuentosAplicables.size() ==  _fechasEsperadas.size()
+      descuentosAplicables.size() ==  _descuentosAplicados
       descuentosAplicables.every { da -> da.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE }
       descuentosAplicables*.fechaDeExpiracion*.format("dd/MM/yyyy").sort() == _fechasEsperadas.sort()
-      descuentosAplicables*.descuento*.diasPreviosParaCancelarDescuento.sort() == _diasParaCancelar.sort()
+      descuentosAplicables*.descuento*.diasPreviosParaCancelarDescuento.sort() == _diasAplicados.sort()
     where:
-      _fechaDeReferencia | _diasParaCancelar || _fechasEsperadas
-      "30/10/2013"       | [7]               || ["23/10/2013"]
-      "30/10/2013"       | [7,14]            || ["23/10/2013","16/10/2013"]
-      "25/10/2013"       | [7,14,21]         || ["04/10/2013","11/10/2013","18/10/2013"]
+      _fechaDeReferencia | _diasParaCancelar || _diasAplicados | _fechasEsperadas                           | _descuentosAplicados
+      creaFecha(30)      | [7]               || [7]            | [creaFecha(23)]                            | 1
+      creaFecha(30)      | [7,14]            || [7,14]         | [creaFecha(23),creaFecha(16)]              | 2
+      creaFecha(30)      | [7,14,21]         || [7,14,21]      | [creaFecha(23),creaFecha(16),creaFecha(9)] | 3
+      creaFecha(1)       | [7]               || []             | []                                         | 0
+      creaFecha(10)      | [7,14]            || [7]            | [creaFecha(3)]                             | 1
+      creaFecha(15)      | [7,14,21]         || [7,14]         | [creaFecha(8),creaFecha(1)]                | 2
   }
 
 	def "Agregar un descuento aplicado a un pago"() {
