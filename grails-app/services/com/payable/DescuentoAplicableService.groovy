@@ -28,12 +28,20 @@ class DescuentoAplicableService {
   }
 
   void expirarDescuentosRecalcularPagos(){
-    def pagos = Pago.withCriteria(){
-      descuentosAplicables{
-        eq 'descuentoAplicableStatus',DescuentoAplicableStatus.VIGENTE
-        le 'fechaDeExpiracion', new Date()
-      }
+    def descuentosAplicables = DescuentoAplicable.withCriteria(){
+      eq 'descuentoAplicableStatus',DescuentoAplicableStatus.VIGENTE
+      le 'fechaDeExpiracion', new Date()
     }
-    println pagos
+    descuentosAplicables.each { dA ->
+      dA.descuentoAplicableStatus = DescuentoAplicableStatus.EXPIRADO
+      invalidarDescuentoAplicableAUnPago(dA,dA.pago.id)
+    }
+    println "Quitando descuentos ${descuentosAplicables}"
+  }
+
+  void invalidarDescuentoAplicableAUnPago(DescuentoAplicable descuentoAplicable, Long pagoId){
+    Pago pago = Pago.get(pagoId)
+    pago.descuentoAplicable -= (pago.cantidadDePago / 100 * descuentoAplicable.descuento.porcentaje)
+    pago.save()
   }
 }
