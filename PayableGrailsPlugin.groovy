@@ -8,6 +8,8 @@ class PayableGrailsPlugin {
         "grails-app/views/error.gsp"
     ]
 
+    //def dependsOn = ['amazon-s3':"* > 0.8",'quartz':"* > 1.0"]
+    
     // TODO Fill in these fields
     def title = "Payable Plugin" // Headline display name of the plugin
     def author = "Your name"

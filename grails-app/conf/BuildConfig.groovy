@@ -38,6 +38,7 @@ grails.project.dependency.resolution = {
       ":rest-client-builder:1.0.3") {
         export = false
       }
+    provided ":hibernate:$grailsVersion"
     compile ":amazon-s3:0.8.2"
     compile ":quartz:1.0-RC13"
     test ":code-coverage:1.2.6"
