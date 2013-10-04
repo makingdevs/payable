@@ -26,4 +26,14 @@ class DescuentoAplicableService {
     pago.save()
     pago
   }
+
+  void expirarDescuentosRecalcularPagos(){
+    def pagos = Pago.withCriteria(){
+      descuentosAplicables{
+        eq 'descuentoAplicableStatus',DescuentoAplicableStatus.VIGENTE
+        le 'fechaDeExpiracion', new Date()
+      }
+    }
+    println pagos
+  }
 }
