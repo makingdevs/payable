@@ -36,7 +36,6 @@ class DescuentoAplicableService {
       dA.descuentoAplicableStatus = DescuentoAplicableStatus.EXPIRADO
       invalidarDescuentoAplicableAUnPago(dA,dA.pago.id)
     }
-    println "Quitando descuentos ${descuentosAplicables}"
   }
 
   void invalidarDescuentoAplicableAUnPago(DescuentoAplicable descuentoAplicable, Long pagoId){
