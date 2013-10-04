@@ -27,7 +27,7 @@ class DescuentoTagLib {
   }
 
   private def sumaPorcentajeDeDescuentosDelPago( Pago pago ) {
-    pago.descuentosAplicables*.descuento.sum(0) { it.porcentaje }
+    pago.descuentosAplicables.findAll{ it.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE}*.descuento.sum(0) { it.porcentaje }
   }
 
 }

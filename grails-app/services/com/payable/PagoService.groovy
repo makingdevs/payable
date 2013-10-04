@@ -23,7 +23,6 @@ class PagoService {
 
   def estadoDeCuentaUsuario(def usuario) {
     def pagos = findAllPagosInUsuario(usuario)
-    log.debug pagos
     def (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
       pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
