@@ -39,7 +39,7 @@ grails.project.dependency.resolution = {
         export = false
       }
     compile ":amazon-s3:0.8.2"
-    compile ":quartz:1.0-RC9"
+    compile ":quartz:1.0-RC13"
     test ":code-coverage:1.2.6"
     test(":spock:0.7") {
       exclude "spock-grails-support"
