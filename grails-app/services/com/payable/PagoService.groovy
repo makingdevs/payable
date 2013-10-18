@@ -28,7 +28,10 @@ class PagoService {
       pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
       pagosEnTiempo    : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pago.descuentosAplicables }, // pagosDeUsuarioEnTiempoConDescuento
       pagosPorRealizar : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pago.descuentosAplicables }, // pagosDeUsuarioEnTiempoSinDescuento
-      pagoMensual      : pagos.findAll { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO } // pagosConciliadosFavorablemente
+      pagoMensual      : pagos.findAll { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO }, // pagosConciliadosFavorablemente
+      pagosRechazados  : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.RECHAZADO},
+      pagosProcesados  : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PROCESO},
+      pagoCorrectos    : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PAGADO}
     ]
   }
 
