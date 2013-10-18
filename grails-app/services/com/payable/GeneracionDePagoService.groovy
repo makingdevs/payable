@@ -5,28 +5,11 @@ class GeneracionDePagoService {
   def conceptoService
 
   def generaPagoParaGrupo( GrupoPagoCommand grupoPagoCommand ) {
-    conceptoService.buscarOSalvarConceptoDePago(grupoPagoCommand.organizacion, grupoPagoCommand.conceptoDePago)
-
-    def listaDeDescuentosParaAplicar = Descuento.getAll(grupoPagoCommand.descuentoIds)
-    def descuentos = []
-
-    listaDeDescuentosParaAplicar.each { descuentoParaAplicar ->
-      def fechasDescuentos = obtenerFechas(grupoPagoCommand.meses, descuentoParaAplicar.fechaDeVencimiento)
-      fechasDescuentos.each { fecha ->
-        Descuento descuento = new Descuento()
-        descuento.nombreDeDescuento = descuentoParaAplicar.nombreDeDescuento
-        descuento.porcentaje = descuentoParaAplicar?.porcentaje
-        descuento.cantidad = descuentoParaAplicar?.cantidad
-        descuento.fechaDeVencimiento = fecha
-        descuento.organizacion = descuentoParaAplicar.organizacion
-        descuento.save()
-        descuentos << descuento
-      }
-    }
+    def concepto = conceptoService.buscarOSalvarConceptoDePago(grupoPagoCommand.organizacion, grupoPagoCommand.conceptoDePago)
 
     def pagos = []
     grupoPagoCommand.payables.each { payable ->
-      def payments = generarPagosParaPayable(payable, grupoPagoCommand, descuentos)
+      def payments = generarPagosParaPayable(payable, grupoPagoCommand)
       payments.each { payment ->
         payable.addToPagos(payment)
         pagos << payment
@@ -61,12 +44,12 @@ class GeneracionDePagoService {
     fechas
   }
 
-  private def generarPagosParaPayable(Payable payable, GrupoPagoCommand grupoPagoCommand, List descuentos) {
+  private def generarPagosParaPayable(Payable payable, GrupoPagoCommand grupoPagoCommand) {
     def recargo = Recargo.get(grupoPagoCommand.recargoId)
-    generatePaymentBook(grupoPagoCommand, recargo, descuentos)
+    generatePaymentBook(grupoPagoCommand, recargo)
   }
 
-  private def generatePaymentBook(GrupoPagoCommand grupoPagoCommand, recargo, descuentos) {
+  private def generatePaymentBook(GrupoPagoCommand grupoPagoCommand, recargo) {
     def meses = grupoPagoCommand.meses
     def pagos = []
     def fechasDeVencimiento = obtenerFechas(meses, grupoPagoCommand.fechaDeVencimiento)
@@ -81,9 +64,7 @@ class GeneracionDePagoService {
 
       pago.fechaDeVencimiento = fechaDeVencimiento
 
-      descuentos.each { descuento ->
-        pago.addToDescuentos(descuento)
-      }
+
       pago.recargo = recargo
       pago.save()
 
