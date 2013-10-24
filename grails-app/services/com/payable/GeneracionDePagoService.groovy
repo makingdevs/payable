@@ -45,7 +45,7 @@ class GeneracionDePagoService {
   }
 
   private def generarPagosParaPayable(Payable payable, GrupoPagoCommand grupoPagoCommand) {
-    def recargo = Recargo.get(grupoPagoCommand.recargoId)
+    def recargo = Recargo.findById(grupoPagoCommand.recargoId)
     generatePaymentBook(grupoPagoCommand, recargo)
   }
 
@@ -63,7 +63,6 @@ class GeneracionDePagoService {
         pago.cantidadDePago *= 2
 
       pago.fechaDeVencimiento = fechaDeVencimiento
-
 
       pago.recargo = recargo
       pago.save()
