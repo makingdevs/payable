@@ -36,7 +36,7 @@ class EsquemaDePagoServiceSpec extends Specification {
       gpc.cantidadDePago = 13000
       gpc.conceptoDePago = "concepto"
       gpc.recargoId = recargo.id
-      gpc.descuentoIds = [descuento.id]
+      gpc.descuentoIds = ["[${descuento.id}]"]
     when:
       def esquemaDePago = service.buscarOSalvarEsquemaDePago(gpc)
     then:
