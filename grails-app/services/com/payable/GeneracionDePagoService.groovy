@@ -20,16 +20,20 @@ class GeneracionDePagoService {
 
   }
 
-  private def obtenerFechas(def meses, Date fechaDeVencimiento) {
+  private def obtenerFechas(def meses, Date fechaDeVencimiento, Integer diasVencimientoPago) {
     def fechas = []
 
     Calendar cal = Calendar.getInstance()
     cal.setTime(fechaDeVencimiento)
-    fechas.add(fechaDeVencimiento)
-
     def year = cal.get(Calendar.YEAR)
     def month = cal.get(Calendar.MONTH)
     def day = cal.get(Calendar.DAY_OF_MONTH)
+
+    if (diasVencimientoPago)
+      day = diasVencimientoPago
+
+    cal.set(year, month, day)
+    fechas.add(cal.getTime())
 
     meses*.toInteger().each { mes ->
       if (mes < month) {
@@ -52,7 +56,7 @@ class GeneracionDePagoService {
   private def generatePaymentBook(GrupoPagoCommand grupoPagoCommand, recargo) {
     def meses = grupoPagoCommand.meses
     def pagos = []
-    def fechasDeVencimiento = obtenerFechas(meses, grupoPagoCommand.fechaDeVencimiento)
+    def fechasDeVencimiento = obtenerFechas(meses, grupoPagoCommand.fechaDeVencimiento, grupoPagoCommand.diasVencimientoPago)
 
     fechasDeVencimiento.each { fechaDeVencimiento ->
       Pago pago = new Pago()
