@@ -23,7 +23,7 @@ class DescuentoAplicableService {
 
   Pago agregarDescuentoAplicableAUnPago(DescuentoAplicable descuentoAplicable, Long pagoId){
     Pago pago = Pago.get(pagoId)
-    pago.descuentoAplicable += pago.cantidadDePago / 100 * descuentoAplicable.descuento.porcentaje
+    pago.descuentoAplicable += pago.cantidadDePago / 100 * descuentoAplicable.descuento.porcentaje ?: descuentoAplicable.descuento.cantidad
     pago.addToDescuentosAplicables(descuentoAplicable)
     pago.save()
     pago
