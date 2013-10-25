@@ -6,6 +6,7 @@ class GrupoPagoCommand {
   BigDecimal cantidadDePago
   String conceptoDePago
   Date fechaDeVencimiento
+  Integer diasVencimientoPago
 
   List<Long> descuentoIds
 
@@ -14,5 +15,6 @@ class GrupoPagoCommand {
 
   def meses = []
   def pagoDoble = []
+
 
 }
