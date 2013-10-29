@@ -15,8 +15,6 @@ class EsquemaDePagoService {
         def descuento = Descuento.findById(descuentoid.toLong())
         esquemaDePago.addToDescuentos(descuento)
       }
-      println esquemaDePago.validate()
-      println esquemaDePago.errors
     esquemaDePago.save(flush:true)
     }
 
