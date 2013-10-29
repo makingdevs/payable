@@ -24,16 +24,13 @@ class GeneracionDePagoService {
     def fechas = []
 
     Calendar cal = Calendar.getInstance()
-    cal.setTime(fechaDeVencimiento)
+    cal.setTime(new Date())
     def year = cal.get(Calendar.YEAR)
     def month = cal.get(Calendar.MONTH)
     def day = cal.get(Calendar.DAY_OF_MONTH)
 
     if (diasVencimientoPago)
-      day = diasVencimientoPago
-
-    cal.set(year, month, day)
-    fechas.add(cal.getTime())
+      day = diasVencimientoPagos
 
     meses*.toInteger().each { mes ->
       if (mes < month) {
@@ -81,8 +78,7 @@ class GeneracionDePagoService {
     Calendar cal = Calendar.getInstance()
     cal.setTime(fechaDeVencimiento)
     def month = cal.get(Calendar.MONTH)
-
-    pagoDoble.contains(month)
+    pagoDoble.contains(month.toString())
   }
 
 }
