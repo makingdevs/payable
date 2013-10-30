@@ -15,6 +15,7 @@ class GeneracionDePagoServiceSpec extends Specification {
           cantidadDePago : cantidadDePago,
           descuentoIds : [],
           pagoDoble : [],
+          diasVencimientoPago : 4,
           fechaDeVencimiento : fechaDeVencimiento,
           organizacion : new Organizacion().save(validate:false),
           payables : [new Payable()]
@@ -153,7 +154,7 @@ class GeneracionDePagoServiceSpec extends Specification {
 
     then :
       assert conceptoServiceMock.verify() == null
-      assert pagos.size() == 5
+      assert pagos.size() == 4
       assert pagos.first().id > 0
       assert !pagos.first().descuentosAplicables
       assert !pagos.first().recargo
@@ -162,7 +163,7 @@ class GeneracionDePagoServiceSpec extends Specification {
 
     where : 
       conceptoDePago   | cantidadDePago | fechaDeVencimiento | meses
-      "conceptoDePago" | 100.00         | new Date() + 7     | [1,3,5,10]
+      "conceptoDePago" | 100.00         | new Date() + 7     | [1,3,5,11]
   }
 
   @Ignore
