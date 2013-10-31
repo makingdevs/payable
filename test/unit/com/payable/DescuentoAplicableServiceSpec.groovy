@@ -64,7 +64,7 @@ class DescuentoAplicableServiceSpec extends Specification {
 	def "Agregar un descuento aplicado a un pago"() {
     given:
       def pago = new Pago(cantidadDePago:_cantidadDePago,descuentoAplicable:_descuentoAplicableActual).save(validate:false)
-      def descuento = new Descuento(porcentaje:_porcentaje).save(validate:false)
+      def descuento = new Descuento(porcentaje:_porcentaje, cantidad:_cantidad).save(validate:false)
       def descuentoAplicable = new DescuentoAplicable(descuento:descuento).save(validate:false,descuento:descuento)
     when:
       def noDescuentosAplicablesIniciales = pago?.descuentosAplicables?.size() ?: 0
@@ -74,12 +74,15 @@ class DescuentoAplicableServiceSpec extends Specification {
       pagoEsperado.cantidadDePago == _cantidadDePago
       pagoEsperado.descuentoAplicable == nuevoDescuentoAplicable
     where:
-      _cantidadDePago | _descuentoAplicableActual | _porcentaje || nuevoDescuentoAplicable
-      100             | 0                         | 10          || 10
-      750             | 100                       | 15          || 212.5
-      3250            | 325                       | 10          || 650
-      3250            | 650                       | 10          || 975
+      _cantidadDePago | _descuentoAplicableActual | _porcentaje | _cantidad || nuevoDescuentoAplicable
+      100             | 0                         | 10          |   ""      || 10
+      750             | 100                       | 15          |   ""      || 212.5
+      3250            | 325                       | 10          |   ""      || 650
+      3250            | 650                       | 10          |   ""      || 975
+      3250            | 650                       | ""          |   500     || 1150
 	}
+
+  
 
   private def crearDescuentos(def diasParaCancelar){
     diasParaCancelar.collect { d -> new Descuento(diasPreviosParaCancelarDescuento:d).save(validate:false) }
