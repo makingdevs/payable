@@ -20,7 +20,7 @@ class Descuento {
   }
 
   String toString(){
-    "${nombreDeDescuento} por ${porcentaje} % - \$ ${cantidad}"
+    "${nombreDeDescuento} por ${porcentaje ?: 0} % - \$ ${cantidad ?: 0}"
   }
 
 }

@@ -4,7 +4,7 @@ enum TipoDePago {
   TRANSFERENCIA_BANCARIA("Transferencia Bancaria"),
   FICHA_REFERENCIADA("Ficha Referenciada"),
   CHEQUE_FICHA("Cheque Ficha"),
-  EFECTIVO("EFECTIVO"),
+  EFECTIVO("Efectivo"),
   TERMINAL("Terminal")
 
   final String value
