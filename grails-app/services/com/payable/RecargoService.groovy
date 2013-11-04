@@ -11,5 +11,11 @@ class RecargoService {
       recargo.save()
     }
   }
+  def calcularRecargoAcumulado(Recargo recargo, def cantidadDePago) {
+  	if (recargo.porcentaje)
+  		cantidadDePago / 100 * recargo.porcentaje
+  	else
+  		recargo.camtidad
 
+  }
 }
