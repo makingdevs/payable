@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType
 class PagoService {
 
   def esquemaDePagoService
+  def recargoService
 
   def crearPago(Date fechaDeVencimiento, Long esquemaDePagoId){
     def esquemaDePago = EsquemaDePago.get(esquemaDePagoId)
@@ -33,6 +34,24 @@ class PagoService {
       pagosProcesados  : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PROCESO},
       pagoCorrectos    : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PAGADO}
     ]
+  }
+
+  def exprirarPagosYCalcularRecargo() {
+    def pagos = Pago.withCriteria{
+      le('fechaDeVencimiento', new Date())
+      eq('estatusDePago', EstatusDePago.CREADO)
+    }
+    pagos << Pago.withCriteria{
+      le('fechaDeVencimiento', new Date())
+      eq('estatusDePago', EstatusDePago.RECHAZADO) 
+    }
+    pagos.flatten().each{ pago ->
+      if (pago.recargo)
+        pago.recargosAcumulados = recargoService.calcularRecargoAcumulado(pago.recargo, pago.cantidadDePago)
+      pago.estatusDePago = EstatusDePago.VENCIDO
+      pago.save()
+    }
+    pagos.flatten()
   }
 
   private def findAllPagosInUsuario(def usuario) {
