@@ -1,6 +1,7 @@
 package com.payable
 
 import org.grails.s3.S3Asset
+import com.payable.TipoDePago
 
 class ComprobanteService {
 
@@ -20,9 +21,10 @@ class ComprobanteService {
     pago
   }
 
-  def aprobarPago(String transactionId, Date fechaDePago, TipoDePago tipoDePago) {
+  def aprobarPago(String transactionId, Date fechaDePago, def tipoPago) {
+    println transactionId
     def pago = Pago.findByTransactionId(transactionId)
-    pago.tipoDePago = tipoDePago
+    pago.tipoDePago = TipoDePago.getAt(tipoPago)
     pago.fechaDePago = fechaDePago
     pago.estatusDePago = EstatusDePago.PAGADO
     pago.save()
