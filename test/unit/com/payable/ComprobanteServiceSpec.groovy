@@ -15,12 +15,13 @@ class ComprobanteServiceSpec extends Specification {
       def pagoExistente = new Pago(conceptoDePago : "",fechaDeVencimiento : new Date() + 10,cantidadDePago : 1000,transactionId : "1234567890",comprobanteDePago:new S3Asset())
       pagoExistente.save(validate:false)
     when : "Le decimos que lo apruebe el pago conciliado"
-      def pagoAprobado = service.aprobarPago("1234567890", new Date() - 2, _tipoDePago)
+      def pagoAprobado = service.aprobarPago("1234567890", new Date() - 2, _tipoPago)
     then : "Que el pago esté aprobado"
       pagoAprobado.estatusDePago == EstatusDePago.PAGADO
       pagoAprobado.fechaDePago
       pagoAprobado.tipoDePago == _tipoDePago
     where : 
+      _tipoPago << ["TRANSFERENCIA_BANCARIA", "FICHA_REFERENCIADA", "CHEQUE_FICHA", "EFECTIVO", "TERMINAL"]
       _tipoDePago << [TipoDePago.TRANSFERENCIA_BANCARIA,TipoDePago.FICHA_REFERENCIADA,TipoDePago.CHEQUE_FICHA,TipoDePago.EFECTIVO,TipoDePago.TERMINAL]
   }
 
