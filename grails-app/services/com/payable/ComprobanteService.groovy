@@ -22,7 +22,6 @@ class ComprobanteService {
   }
 
   def aprobarPago(String transactionId, Date fechaDePago, def tipoPago) {
-    println transactionId
     def pago = Pago.findByTransactionId(transactionId)
     pago.tipoDePago = TipoDePago.getAt(tipoPago)
     pago.fechaDePago = fechaDePago
