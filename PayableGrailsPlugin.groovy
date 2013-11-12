@@ -1,9 +1,7 @@
 class PayableGrailsPlugin {
-    // the plugin version
+    def groupId = "com.makingdevs"
     def version = "0.2.6"
-    // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.2 > *"
-    // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp"
     ]
