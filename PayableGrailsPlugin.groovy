@@ -1,5 +1,5 @@
 class PayableGrailsPlugin {
-    def groupId = "com.makingdevs"
+    def groupId = "com.payable"
     def version = "0.2.6"
     def grailsVersion = "2.2 > *"
     def pluginExcludes = [
