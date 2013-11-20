@@ -27,12 +27,12 @@ class PagoService {
     def (minimum, maximum) = getFirstAndLastDayOfMonth()
     [
       pagosVencidos    : pagos.findAll { pago -> pago.fechaDeVencimiento <= new Date() && pago.estatusDePago == EstatusDePago.VENCIDO }, // pagosVencidos
-      pagosEnTiempo    : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && pago.descuentosAplicables }, // pagosDeUsuarioEnTiempoConDescuento
-      pagosPorRealizar : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO && !pago.descuentosAplicables }, // pagosDeUsuarioEnTiempoSinDescuento
-      pagoMensual      : pagos.findAll { pago -> pago.lastUpdated >= minimum && pago.lastUpdated <= maximum && pago.estatusDePago == EstatusDePago.PAGADO }, // pagosConciliadosFavorablemente
+      pagosEnTiempo    : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.fechaDeVencimiento <= maximum && pago.estatusDePago == EstatusDePago.CREADO }, // pagosDeUsuarioEnTiempoConDescuento
+      pagosPorRealizar : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.CREADO  }, // pagosDeUsuarioEnTiempoSinDescuento
+      pagoMensual      : pagos.findAll { pago -> pago.fechaDePago <= minimum && pago.estatusDePago == EstatusDePago.PAGADO }, // pagosConciliadosFavorablemente
       pagosRechazados  : pagos.findAll { pago -> pago.fechaDeVencimiento >= new Date() && pago.estatusDePago == EstatusDePago.RECHAZADO},
       pagosProcesados  : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PROCESO},
-      pagoCorrectos    : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PAGADO}
+      pagoCorrectos    : pagos.findAll { pago -> pago.estatusDePago == EstatusDePago.PAGADO && pago.fechaDePago <= maximum}
     ]
   }
 
