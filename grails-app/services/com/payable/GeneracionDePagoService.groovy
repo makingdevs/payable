@@ -44,6 +44,9 @@ class GeneracionDePagoService {
       } else if (mes > month) {
         cal.set(year, mes, day)
         fechas.add(cal.getTime())
+      } else if (mes == month) {
+        cal.set(year, mes, day)
+        fechas.add(cal.getTime())
       }
     }
 
