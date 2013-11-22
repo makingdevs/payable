@@ -75,9 +75,7 @@ class PagoServiceSpec extends Specification {
     then :
       results
       !results.pagosVencidos
-      !results.pagosEnTiempo
       results.pagosPorRealizar
-      results.pagoMensual
   }
 
   private class Dependiente extends Payable {  }
