@@ -10,10 +10,12 @@ class EsquemaDePagoService {
       esquemaDePago.cantidadDePago = gpc.cantidadDePago
       esquemaDePago.concepto = concepto
       esquemaDePago.recargo = Recargo.get(gpc.recargoId)
-      def listaDescuentos = gpc.descuentoIds.first()?.replace('[','')?.replace(']','')?.split(',') ?: []
-      listaDescuentos.each { descuentoid ->
-        def descuento = Descuento.findById(descuentoid.toLong())
-        esquemaDePago.addToDescuentos(descuento)
+      if (gpc.descuentoIds) {  
+        def listaDescuentos = gpc.descuentoIds.first()?.replace('[','')?.replace(']','')?.split(',') ?: []
+        listaDescuentos.each { descuentoid ->
+          def descuento = Descuento.findById(descuentoid.toLong())
+          esquemaDePago.addToDescuentos(descuento)
+        }
       }
     esquemaDePago.save(flush:true)
     }
