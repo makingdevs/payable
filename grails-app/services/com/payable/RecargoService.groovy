@@ -15,7 +15,7 @@ class RecargoService {
   	if (recargo.porcentaje)
   		cantidadDePago / 100 * recargo.porcentaje
   	else
-  		recargo.camtidad
+  		recargo.cantidad
 
   }
 }
