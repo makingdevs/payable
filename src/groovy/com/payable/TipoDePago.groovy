@@ -5,7 +5,8 @@ enum TipoDePago {
   FICHA_REFERENCIADA("Ficha Referenciada"),
   CHEQUE_FICHA("Cheque Ficha"),
   EFECTIVO("Efectivo"),
-  TERMINAL("Terminal")
+  TERMINAL("Terminal"),
+  PAYPAL("PayPal")
 
   final String value
   TipoDePago(String value){ this.value = value }
