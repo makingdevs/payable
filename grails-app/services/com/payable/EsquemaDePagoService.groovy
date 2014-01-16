@@ -11,8 +11,7 @@ class EsquemaDePagoService {
       esquemaDePago.concepto = concepto
       esquemaDePago.recargo = Recargo.get(gpc.recargoId)
       if (gpc.descuentoIds) {  
-        def listaDescuentos = gpc.descuentoIds.first()?.replace('[','')?.replace(']','')?.split(',') ?: []
-        listaDescuentos.each { descuentoid ->
+        gpc.descuentoIds.each{ descuentoid ->
           def descuento = Descuento.findById(descuentoid.toLong())
           esquemaDePago.addToDescuentos(descuento)
         }
