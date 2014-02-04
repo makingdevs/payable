@@ -26,6 +26,9 @@ class ComprobanteService {
     pago.tipoDePago = TipoDePago.getAt(tipoPago)
     pago.fechaDePago = fechaDePago
     pago.estatusDePago = EstatusDePago.PAGADO
+    pago.descuentosAplicables*.findAll { da ->
+      da.descuentoAplicableStatus = DescuentoAplicableStatus.VIGENTE
+    }*.descuentoAplicableStatus = DescuentoAplicableStatus.APLICADO
     pago.save()
     pago
   }
