@@ -43,7 +43,7 @@ class PagoService {
     }
     pagos << Pago.withCriteria{
       le('fechaDeVencimiento', new Date())
-      eq('estatusDePago', EstatusDePago.RECHAZADO) 
+      eq('estatusDePago', EstatusDePago.RECHAZADO)
     }
     pagos.flatten().each{ pago ->
       if (pago.recargo)
@@ -57,7 +57,6 @@ class PagoService {
   private def findAllPagosInUsuario(def usuario) {
     def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
     def pagos = []
-    
     relationships.each { k, v ->
       try {
         def field = usuario.class.getDeclaredField( k )
@@ -70,7 +69,6 @@ class PagoService {
         log.info nsfe
       }
     }
-    
     pagos
   }
 

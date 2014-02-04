@@ -2,6 +2,7 @@ package com.payable
 
 enum DescuentoAplicableStatus {
   VIGENTE("Vigente"),
+  APLICADO("Aplicado"),
   EXPIRADO("Expirado")
 
   final String value
