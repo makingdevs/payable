@@ -45,7 +45,10 @@ class DescuentoAplicableService {
 
   void invalidarDescuentoAplicableAUnPago(DescuentoAplicable descuentoAplicable, Long pagoId){
     Pago pago = Pago.get(pagoId)
+    if (descuentoAplicable.descuento.porcentaje)
     pago.descuentoAplicable -= (pago.cantidadDePago / 100 * descuentoAplicable.descuento.porcentaje)
+    else 
+    pago.descuentoAplicable -= descuentoAplicable.descuento.cantidad
     pago.save()
   }
 }
