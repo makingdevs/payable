@@ -82,7 +82,50 @@ class DescuentoAplicableServiceSpec extends Specification {
       3250            | 650                       | ""          |   500     || 1150
 	}
 
-  
+  def "Invalidar un descuento aplicado a un pago en el caso de tener un solo descuento"(){
+    given: "Teniendo un descuento a un pago"
+      def descuento = new Descuento(porcentaje:_porcentaje, cantidad:_cantidad).save(validate:false)
+      def descuentoAplicable = new DescuentoAplicable(descuento:descuento).save(validate:false)
+      def pago = new Pago(cantidadDePago:_cantidadDePago,descuentoAplicable:_descuentoAplicableActual)
+      .addToDescuentosAplicables(descuentoAplicable)
+      .save(validate:false)
+    when: "Se llama el servicio para quitar ese descuento a descuento Aplicable"
+      service.invalidarDescuentoAplicableAUnPago(descuentoAplicable,1L)
+    then:
+      pago.descuentosAplicables.size() == 1
+      pago.cantidadDePago == _cantidadDePago
+      pago.descuentoAplicable == nuevoDescuentoAplicable
+    where:
+    _cantidadDePago | _descuentoAplicableActual | _porcentaje | _cantidad || nuevoDescuentoAplicable
+    100             | 10                        | 10          |   ""      || 0
+    750             | 112.5                     | 15          |   ""      || 0
+    100             | 10                        | ""          |   10      || 0
+  }
+
+  def "Invalidar un descuento aplicado a un pago en el caso de tener mas de un descuento"(){
+    given: "Teniendo dos descuentos a un pago"
+      def descuento1 = new Descuento(porcentaje:_porcentaje1, cantidad:_cantidad1).save(validate:false)
+      def descuento2 = new Descuento(porcentaje:_porcentaje2, cantidad:_cantidad2).save(validate:false)
+      def descuentoAplicable1 = new DescuentoAplicable(descuento:descuento1).save(validate:false)
+      def descuentoAplicable2 = new DescuentoAplicable(descuento:descuento2).save(validate:false)
+      def pago = new Pago(cantidadDePago:_cantidadDePago,descuentoAplicable:_descuentoAplicableActual)
+      .addToDescuentosAplicables(descuentoAplicable1)
+      .addToDescuentosAplicables(descuentoAplicable2)
+      .save(validate:false)
+    when: "Se llama al servicio para invalidar el descuento2 a el pago"
+      service.invalidarDescuentoAplicableAUnPago(descuentoAplicable2,1L)
+    then:
+      pago.descuentosAplicables.size() == 2
+      pago.cantidadDePago == _cantidadDePago
+      pago.descuentoAplicable == nuevoDescuentoAplicable
+    where:
+    _cantidadDePago | _descuentoAplicableActual | _porcentaje1 | _cantidad1 | _porcentaje2 | _cantidad2 || nuevoDescuentoAplicable
+    100             | 25                        |  10          |   ""       |  15          |   ""       || 10
+    100             | 25                        |  10          |   ""       |  ""          |   15       || 10
+    750             | 125                       |  10          |   ""       |  ""          |   50       || 75
+    750             | 150                       |  10          |   ""       |  10          |   ""       || 75
+  }
+
 
   private def crearDescuentos(def diasParaCancelar){
     diasParaCancelar.collect { d -> new Descuento(diasPreviosParaCancelarDescuento:d).save(validate:false) }
