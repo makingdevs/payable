@@ -98,8 +98,8 @@ class DescuentoAplicableServiceSpec extends Specification {
     where:
     _cantidadDePago | _descuentoAplicableActual | _porcentaje | _cantidad || nuevoDescuentoAplicable
     100             | 10                        | 10          |   ""      || 0
-    750             | 112.5                     | 15          |   ""      || 0
-    100             | 10                        | ""          |   10      || 0
+    750             | 112.5                     | 15          |   null    || 0
+    100             | 10                        | null        |   10      || 0
   }
 
   def "Invalidar un descuento aplicado a un pago en el caso de tener mas de un descuento"(){
@@ -120,8 +120,8 @@ class DescuentoAplicableServiceSpec extends Specification {
       pago.descuentoAplicable == nuevoDescuentoAplicable
     where:
     _cantidadDePago | _descuentoAplicableActual | _porcentaje1 | _cantidad1 | _porcentaje2 | _cantidad2 || nuevoDescuentoAplicable
-    100             | 25                        |  10          |   ""       |  15          |   ""       || 10
-    100             | 25                        |  10          |   ""       |  ""          |   15       || 10
+    100             | 25                        |  10          |   null     |  15          |   ""       || 10
+    100             | 25                        |  10          |   ""       |  null        |   15       || 10
     750             | 125                       |  10          |   ""       |  ""          |   50       || 75
     750             | 150                       |  10          |   ""       |  10          |   ""       || 75
   }
