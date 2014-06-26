@@ -72,6 +72,9 @@ class GeneracionDePagoService {
         pago.cantidadDePago *= 2
       }
 
+      if(fechaDeVencimiento < new Date())
+        pago.estatusDePago = EstatusDePago.VENCIDO
+        
       pago.fechaDeVencimiento = fechaDeVencimiento
 
       pago.recargo = recargo
