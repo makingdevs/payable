@@ -72,7 +72,7 @@ class GeneracionDePagoService {
         pago.cantidadDePago *= 2
       }
 
-      if(fechaDeVencimiento < new Date())
+      if(fechaDeVencimiento < new Date().clearTime())
         pago.estatusDePago = EstatusDePago.VENCIDO
         
       pago.fechaDeVencimiento = fechaDeVencimiento
