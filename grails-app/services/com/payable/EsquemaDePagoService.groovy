@@ -12,7 +12,7 @@ class EsquemaDePagoService {
       esquemaDePago.recargo = Recargo.get(gpc.recargoId)
       if (gpc.descuentoIds) {  
         gpc.descuentoIds.each{ descuentoid ->
-          def descuento = Descuento.findById(descuentoid.toLong())
+          def descuento = Descuento.findById(descuentoid)
           esquemaDePago.addToDescuentos(descuento)
         }
       }
