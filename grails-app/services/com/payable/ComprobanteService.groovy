@@ -41,4 +41,11 @@ class ComprobanteService {
     pago.save()
     pago
   }
+
+  def obtenerBytesDeComprobante(pagoId){
+    def pago = Pago.get(pagoId)
+    def url = new URL(pago.comprobanteDePago.url())
+    url.getBytes()
+  }
+
 }
