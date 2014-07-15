@@ -11,7 +11,7 @@ class Pago {
   BigDecimal recargosAcumulados = 0
   BigDecimal descuentoAplicable = 0
 
-  String referencia 
+  String referencia
   String conceptoDePago
   String transactionId = UUID.randomUUID().toString().replaceAll('-', '').substring(0,20)
 
