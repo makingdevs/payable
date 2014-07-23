@@ -1,70 +1,59 @@
 class PayableGrailsPlugin {
-    // the version or versions of Grails the plugin is designed for
-    def groupId = "com.payable"
-    def version = "0.2.23"
-    def grailsVersion = "2.2 > *"
-    def pluginExcludes = [
-        "grails-app/views/error.gsp"
-    ]
+  // the version or versions of Grails the plugin is designed for
+  def groupId = "com.payable"
+  def version = "0.2.23"
+  def grailsVersion = "2.2 > *"
+  def pluginExcludes = [
+  "grails-app/views/error.gsp"
+  ]
 
-    //def dependsOn = ['amazon-s3':"* > 0.8",'quartz':"* > 1.0"]
-    
-    // TODO Fill in these fields
-    def title = "Payable Plugin" // Headline display name of the plugin
-    def author = "Your name"
-    def authorEmail = ""
-    def description = '''\
-Brief summary/description of the plugin.
-'''
+  //def dependsOn = ['amazon-s3':"* > 0.8",'quartz':"* > 1.0"]
 
-    // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/payable"
+  // TODO Fill in these fields
+  def title = "Payable Plugin" // Headline display name of the plugin
+  def author = "Your name"
+  def authorEmail = ""
+  def description = '''\
+  Brief summary/description of the plugin.
+  '''
 
-    // Extra (optional) plugin metadata
+  // URL to the plugin's documentation
+  def documentation = "http://grails.org/plugin/payable"
 
-    // License: one of 'APACHE', 'GPL2', 'GPL3'
-//    def license = "APACHE"
+  // Extra (optional) plugin metadata
 
-    // Details of company behind the plugin (if there is one)
-//    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
+  // License: one of 'APACHE', 'GPL2', 'GPL3'
+  //    def license = "APACHE"
 
-    // Any additional developers beyond the author specified above.
-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
+  // Details of company behind the plugin (if there is one)
+  //    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
 
-    // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
+  // Any additional developers beyond the author specified above.
+  //    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
 
-    // Online location of the plugin's browseable source code.
-//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
+  // Location of the plugin's issue tracker.
+  //    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
 
-    def doWithWebDescriptor = { xml ->
-        // TODO Implement additions to web.xml (optional), this event occurs before
-    }
+  // Online location of the plugin's browseable source code.
+  //    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
 
-    def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
-    }
+  def doWithWebDescriptor = { xml -> }
 
-    def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
-    }
+  def doWithSpring = {
+  }
 
-    def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
-    }
+  def doWithDynamicMethods = { ctx ->
+  }
 
-    def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
-    }
+  def doWithApplicationContext = { applicationContext ->
+  }
 
-    def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
-    }
+  def onChange = { event ->
+  }
 
-    def onShutdown = { event ->
-        // TODO Implement code that is executed when the application shuts down (optional)
-    }
+  def onConfigChange = { event ->
+  }
+
+  def onShutdown = { event ->
+  }
 }
