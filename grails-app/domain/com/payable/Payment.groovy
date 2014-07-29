@@ -12,6 +12,15 @@ class Payment {
   String reference
   String paymentConcept
   String transactionId = UUID.randomUUID().toString().replaceAll('-', '').substring(0,20)
+  
+  PaymentType paymentType = PaymentType.WIRE_TRANSFER
+  PaymentStatus paymentStatus = PaymentStatus.CREATED
+
+  S3Asset proofOfPayment
+  
+  Surchage surchage
+
+  static hasMany = [applicableDiscounts : ApplicableDiscount]
 
   Date dateCreated
   Date lastUpdated  
@@ -23,6 +32,8 @@ class Payment {
     applicableDiscount() 
     paymentDate nullable:true
     transactionId size:20..20
+    proofOfPayment nullable:true
+    surchage nullable:true
     reference nullable:true
   }
 
