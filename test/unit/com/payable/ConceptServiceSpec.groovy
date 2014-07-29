@@ -19,7 +19,7 @@ class ConceptServiceSpec extends Specification {
       concept1.organization = organization
       concept1.save(flush:true) 
 
-      concept2.description = ""
+      concept2.description = "First tuition"
       concept2.organization = organization
       concept2.save(flush:true)
 
