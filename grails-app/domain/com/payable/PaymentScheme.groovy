@@ -6,7 +6,7 @@ class PaymentScheme {
   Concept concept
   Surcharge surcharge
   
-  static hasMany = [discount : Discount]
+  static hasMany = [discounts : Discount]
 
   static constraints = {
     surcharge(nullable:true)
