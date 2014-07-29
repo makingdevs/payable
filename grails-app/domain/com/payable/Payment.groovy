@@ -35,7 +35,7 @@ class Payment {
     paymentDate nullable:true
     transactionId size:20..20
     proofOfPayment nullable:true
-    surchage nullable:true
+    surcharge nullable:true
     reference nullable:true
   }
 
