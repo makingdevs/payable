@@ -1,8 +1,8 @@
 package com.payable
 
 enum ApplicableDiscountStatus{
-  VALID("Valid")
-  APPLIED("Applied")
+  VALID("Valid"),
+  APPLIED("Applied"),
   EXPIRED("Expired")
   
   final String value

@@ -1,5 +1,7 @@
 package com.payable
 
+import org.grails.s3.S3Asset
+
 class Payment {
  
   Date paymentDate 
@@ -18,7 +20,7 @@ class Payment {
 
   S3Asset proofOfPayment
   
-  Surchage surchage
+  Surcharge surcharge
 
   static hasMany = [applicableDiscounts : ApplicableDiscount]
 

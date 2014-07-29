@@ -1,11 +1,11 @@
 package com.payable
 
 enum PaymentType {
-  WIRE_TRANSFER("Wire Transfer")
-  REFERENCED_DEPOSIT("Referenced Deposit")
-  CHECK("Check")
-  CASH("Cash")
-  TERMINAL("Terminal")
+  WIRE_TRANSFER("Wire Transfer"),
+  REFERENCED_DEPOSIT("Referenced Deposit"),
+  CHECK("Check"),
+  CASH("Cash"),
+  TERMINAL("Terminal"),
   PAYPAL("PayPal")
   
   final String value
