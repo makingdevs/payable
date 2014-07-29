@@ -3,7 +3,7 @@ package com.payable
 enum PaymentStatus{
   CREATED("Created")
   EXPIRED("Expired")
-  PROCESS("Payment in Process")
+  PROCESS("Verifying")
   PAID("Paid") 
   REJECTED("Rejected")
   CANCELED("Canceled")
