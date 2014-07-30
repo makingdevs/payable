@@ -10,4 +10,10 @@ class ConceptService {
       eq ('organization',organization) 
     }
   } 
+
+  def savePaymentConcept(Organization organization,conceptDescription){ 
+    Concept concept = Concept.findByDescription(conceptDescription) ?: new Concept(description:conceptDescription,
+                                                                                   organization:organization).save()
+    concept
+  }
 }

@@ -30,4 +30,40 @@ class ConceptServiceSpec extends Specification {
     then: "The concepts quantity must be equal to 2"
       assert institutionConcepts.size() == 2
   }
+  
+  def "When a concept of a generated payment is saved and it doesn´t exist must be created"(){
+    given: "An organization and a concept description"
+      def organization = new Organization()
+      organization.name = "Escuela Superior de Cómputo"
+      organization.save()
+      String conceptDescription = "Inexistent Concept"
+
+    when:"A call to the service that verifies the concept existence will be done"
+      def savedConcept = service.savePaymentConcept(organization,conceptDescription)
+
+    then:
+      assert savedConcept.id == 1 
+      assert savedConcept.description == "Inexistent Concept"
+  }
+  
+  def "Should not save a duplicate payment concept by institution"(){
+    given: ""
+      String conceptDescription = "Existent concept"
+      
+      def organization = new Organization()
+      organization.name = "Escuela Superior De Cómputo"
+      organization.save()
+
+      Concept concept = new Concept()
+      concept.description = conceptDescription
+      concept.organization = organization
+      concept.save()
+
+    when: "A call to the service that verifies the exsistence of the concept will be done"
+      def savedConcept = service.savePaymentConcept(organization,conceptDescription)
+    
+    then:
+      assert savedConcept.id == concept.id
+      assert savedConcept.description == concept.description
+  } 
 }
