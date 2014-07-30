@@ -8,9 +8,9 @@ class PaymentGroupCommand {
   Date dueDate
   Integer daysPaymentDue
   Organization organization 
-  def payments = []
+  def instances = []
   def discountIds = []
   def months = []
-  def doublePayments = [] 
+  def doublePayment = [] 
 
 } 
