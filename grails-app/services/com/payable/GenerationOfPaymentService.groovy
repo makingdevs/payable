@@ -4,7 +4,7 @@ class GenerationOfPaymentService {
 
   def conceptService
 
-  def generatePaymentForGroup(PaymentGroupCommand paymentGroupCommand){
+  def generatePaymentsForGroup(PaymentGroupCommand paymentGroupCommand){
     def concept = conceptService.savePaymentConcept(paymentGroupCommand.organization, paymentGroupCommand.paymentConcept)
 
     def payments = []
