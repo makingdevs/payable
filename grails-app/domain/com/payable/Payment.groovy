@@ -9,7 +9,7 @@ class Payment {
 
   BigDecimal paymentAmount
   BigDecimal accumulatedSurcharges = 0
-  BigDecimal applicableDiscount = 0
+  BigDecimal accumulatedDiscount  = 0
   
   String reference
   String paymentConcept
@@ -31,7 +31,7 @@ class Payment {
     paymentConcept size:1..100,blank:false
     paymentAmount min:1.0
     accumulatedSurcharges()
-    applicableDiscount() 
+    accumulatedDiscount() 
     paymentDate nullable:true
     transactionId size:20..20
     proofOfPayment nullable:true
