@@ -97,7 +97,6 @@ class GenerationOfPaymentService {
       }
     }
 
-    log.error "Dates ${dates}"  
     dates
   }
 }
