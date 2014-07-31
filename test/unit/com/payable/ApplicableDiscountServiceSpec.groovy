@@ -10,7 +10,7 @@ import spock.lang.Shared
 @Mock([Discount,PaymentScheme,Payment,ApplicableDiscount])
 class ApplicableDiscountServiceSpec extends Specification {
   
-  @Shared createDate = {  n -> (new Date() + n).format("dd/MM/yyyy")  }
+  @Shared createDate = {  n -> (new Date() - n).format("dd/MM/yyyy")  }
 
   @Unroll("Generate a discount with an expiration date #_expirationDate and percentage of #_percentage %")
   def "Generate an applicated discount with a due date and a discount"(){
@@ -42,13 +42,13 @@ class ApplicableDiscountServiceSpec extends Specification {
   def "Generate applied discounts of a paymente scheme"(){
     given:
       def discounts = createDiscounts(_previousDays)
-      def paymentScheme = new PaymentScheme().save(validate:false)
+      def paymentScheme = new PaymentScheme()
       discounts.each{ discount -> paymentScheme.addToDiscounts(discount) }
       paymentScheme.save(validate:false)
       def referenceDate = Date.parse("dd/MM/yyyy",_referenceDate)
 
     when:
-      def applicableDiscounts = service.generateForPaymentWithPaymentSchemeWithReferenceDate(1L, referenceDate)
+      def applicableDiscounts = service.generateForPaymentWithPaymentSchemeWithReferenceDate(paymentScheme.id, referenceDate)
 
     then:
       applicableDiscounts.size() == _appliedDiscounts
@@ -58,12 +58,12 @@ class ApplicableDiscountServiceSpec extends Specification {
 
     where:
       _referenceDate  |  _previousDays  ||  _appliedDays  || _expectedDates                                 || _appliedDiscounts
-      createDate(30)  | [7]             ||  [7]           || [createDate(23)]                               ||  1
-      createDate(30)  | [7,14]          ||  [7,14]        || [createDate(23),createDate(16)]                ||  2
-      createDate(30)  | [7,14,21]       ||  [7,14,21]     || [createDate(23),createDate(16),createDate(9)]  ||  3
-      createDate(1)   | [7]             ||  []            || []                                             ||  0
-      createDate(10)  | [7,14]          ||  [7]           || [createDate(3)]                                ||  1
-      createDate(15)  | [7,14,21]       ||  [7,14]        || [createDate(8),createDate(1)]                  ||  2
+      createDate(5)   | [7]             ||  [7]           || [createDate(12)]                               ||  1
+      createDate(5)   | [5,14]          ||  [5,14]        || [createDate(10),createDate(19)]                ||  2
+      createDate(0)   | [0,14,21]       ||  [14,21]       || [createDate(14),createDate(21)]                ||  2 
+      createDate(0)   | [0]             ||  []            || []                                             ||  0
+      createDate(-5)  | [4,14]          ||  [14]          || [createDate(9)]                                ||  1
+      createDate(3)   | [7,14,0]        ||  [7,14,0]      || [createDate(10),createDate(17),createDate(3)]  ||  3
   }
 
   private def createDiscounts(def previousDays){
