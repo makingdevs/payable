@@ -84,7 +84,7 @@ class GenerationOfPaymentServiceSpec extends Specification {
 
     where:
       _paymentConcept | _paymentAmount  |  _dueDate         |  _discountIds
-      "concepto"      | 100.00          |  new Date() + 7   |  [1L]
+      "PaymentConcept"      | 100.00          |  new Date() + 7   |  [1L]
   }
   
   def "Generate a payment with a surcharge for a group"(){
@@ -130,7 +130,7 @@ class GenerationOfPaymentServiceSpec extends Specification {
   
     where:
       _paymentConcept | _paymentAmount | _dueDate       | _surchargeId |  _amount
-      "concepto"      | 100.00         |  new Date()+7  | 1L           |  50.00
+      "paymentConcept"      | 100.00         |  new Date()+7  | 1L           |  50.00
   }
   
   def "Generate a payment book for a litter"(){
@@ -171,5 +171,44 @@ class GenerationOfPaymentServiceSpec extends Specification {
     where:
       _paymentConcept   |   _paymentAmount    |  _dueDate        |   _months
       "paymentConcept"  |   100.00            |  new Date()+7    |   [1,3,5,11]
+  }
+  
+  def "Generate a payment book with double payments for a litter"(){
+    given:
+      def organization = new Organization()
+      organization.save(validate:false)
+
+      PaymentGroupCommand paymentGroupCommand = new PaymentGroupCommand(
+        paymentConcept: _paymentConcept,
+        paymentAmount: _paymentAmount,
+        discountIds: [],
+        doublePayment: _doublePayment,
+        months: _months,
+        dueDate: _dueDate,
+        organization: organization,
+        instances: [new PaymentWithImplements().save()] 
+      )
+    and:
+      def conceptServiceMock = mockFor(ConceptService)
+      conceptServiceMock.demand.savePaymentConcept{ _organization, paymentConcept ->
+        new Concept(organization:_organization, paymentConcept:paymentConcept).save(validate:false)
+      } 
+      service.conceptService = conceptServiceMock.createMock()
+    when:
+      def payments = service.generatePaymentsForGroup(paymentGroupCommand)
+      conceptServiceMock.verify()
+    
+    then:
+      assert payments.size() == 5
+      assert payments.first().id == 1
+      payments.each{ payment ->
+        if(_doublePayment.contains(payment.dueDate.getMonth() ))
+          assert payment.paymentAmount == 200.00
+        else 
+          assert payment.paymentAmount == 100.00
+      }
+    where:
+      _paymentConcept     |   _paymentAmount    |   _dueDate        |   _months     | _doublePayment
+      "PaymentConcept"    |     100.00          |   new Date()+7    | [1,3,5,7,9]   | [1,5,9]
   }
 }
