@@ -132,5 +132,44 @@ class GenerationOfPaymentServiceSpec extends Specification {
       _paymentConcept | _paymentAmount | _dueDate       | _surchargeId |  _amount
       "concepto"      | 100.00         |  new Date()+7  | 1L           |  50.00
   }
+  
+  def "Generate a payment book for a litter"(){
+    given: "An organization"
+      def organization = new Organization()
+      organization.save(validate:false)
 
+      PaymentGroupCommand paymentGroupCommand = new PaymentGroupCommand(
+        paymentConcept: _paymentConcept,
+        paymentAmount: _paymentAmount,
+        discountIds: [],
+        doublePayment: [],
+        months: _months,
+        dueDate: _dueDate,
+        organization: organization,
+        instances: [new PaymentWithImplements().save()]
+      )
+    
+    and:
+      def conceptServiceMock = mockFor(ConceptService)
+      conceptServiceMock.demand.savePaymentConcept{ _organization, paymentConcept ->
+        new Concept(organization:_organization,paymentConcept:paymentConcept).save(validate:false)
+      }
+      service.conceptService = conceptServiceMock.createMock()
+    
+    when:
+      def payments = service.generatePaymentsForGroup(paymentGroupCommand)
+      conceptServiceMock.verify()
+    
+    then:
+      assert payments.size() == 4
+      assert payments.first().id > 0
+      assert !payments.first().applicableDiscounts 
+      assert !payments.first().surcharge 
+      assert payments.first().paymentConcept == _paymentConcept
+      assert payments.first().paymentAmount == _paymentAmount
+
+    where:
+      _paymentConcept   |   _paymentAmount    |  _dueDate        |   _months
+      "paymentConcept"  |   100.00            |  new Date()+7    |   [1,3,5,11]
+  }
 }
