@@ -80,22 +80,24 @@ class GenerationOfPaymentService {
     }
     
     months.each{ m ->
+
       switch(m){
-        case m < month:
+        case {m < month}:
           cal.set(year+1,month,day)
           dates.add(cal.getTime())
         break
-        case m > month:
+        case {m > month}:
           cal.set(year,month,day)
           dates.add(cal.getTime())
         break
-        case m == month:
+        case {m == month}:
           cal.set(year,month,day)
           dates.add(cal.getTime())
         break
       }
     }
-  
+
+    log.error "Dates ${dates}"  
     dates
   }
 }
