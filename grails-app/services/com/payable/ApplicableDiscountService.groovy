@@ -23,5 +23,17 @@ class ApplicableDiscountService {
     applicableDiscounts
   }
 
+  Payment addApplicableDiscountToAPayment(ApplicableDiscount applicableDiscount,Long paymentId){
+    def payment = Payment.get(paymentId)
+    if(applicableDiscount.discount.percentage)  
+      payment.accumulatedDiscount += payment.paymentAmount / 100 * applicableDiscount.discount.percentage
+    else if(applicableDiscount.discount.amount)
+      payment.accumulatedDiscount += applicableDiscount.discount.amount
+
+    payment.addToApplicableDiscounts(applicableDiscount)
+    payment.save()
+    payment
+
+  }
 
 }
