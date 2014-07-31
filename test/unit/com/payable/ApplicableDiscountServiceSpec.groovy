@@ -66,6 +66,31 @@ class ApplicableDiscountServiceSpec extends Specification {
       createDate(3)   | [7,14,0]        ||  [7,14,0]      || [createDate(10),createDate(17),createDate(3)]  ||  3
   }
 
+  def "Add an applicable discount to a payment"(){
+    given:
+      def payment = new Payment(paymentAmount:_paymentAmount,
+                                accumulatedDiscount:_accumulatedDiscount).save(validate:false)
+      def discount = new Discount(percentage:_percentage,
+                                  amount:_amount).save(validate:false) 
+      def applicableDiscount = new ApplicableDiscount(discount:discount).save(validate:false,discount:discount)
+    when:
+      def numberOfApplicableDiscounts = payment?.applicableDiscounts?.size() ?: 0
+      def expectedPayment = service.addApplicableDiscountToAPayment(applicableDiscount,payment.id)
+        
+    then:
+      expectedPayment.applicableDiscounts.size() == numberOfApplicableDiscounts + 1
+      expectedPayment.paymentAmount == _paymentAmount
+      expectedPayment.accumulatedDiscount == _newAccumulatedDiscount
+
+    where: 
+      _paymentAmount  | _accumulatedDiscount  | _percentage | _amount   ||  _newAccumulatedDiscount
+      100             | 0                     | 10          | ""        ||  10
+      750             | 100                   | 15          | ""        ||  212.5
+      3250            | 325                   | 10          | ""        ||  650
+      3250            | 650                   | 10          | ""        ||  975
+      3250            | 650                   | ""          | 500       ||  1150
+  } 
+
   private def createDiscounts(def previousDays){
     previousDays.collect{ day ->
       new Discount(previousDaysForCancelingDiscount:day).save(validate:false)
