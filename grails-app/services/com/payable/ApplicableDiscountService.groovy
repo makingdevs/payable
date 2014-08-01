@@ -33,14 +33,27 @@ class ApplicableDiscountService {
     payment.addToApplicableDiscounts(applicableDiscount)
     payment.save()
     payment
-
   }
+
+  def expireDiscountsAndRecalculatePayment(){
+    
+    def applicableDiscounts = ApplicableDiscount.withCriteria(){
+      eq 'applicableDiscountStatus',ApplicableDiscountStatus.VALID 
+      ge 'expirationDate', new Date()
+    }
+
+    applicableDiscounts.each{ applicableDiscount ->
+      applicableDiscount.applicableDiscountStatus = ApplicableDiscountStatus.EXPIRED
+      invalidateApplicableDiscountToAPayment(applicableDiscount,applicableDiscount.payment.id)
+    } 
+  } 
   
-  def invalidateApplicableDiscountToAPayment(ApplicableDiscount applicableDiscount,Long paymentId){
+  void invalidateApplicableDiscountToAPayment(ApplicableDiscount applicableDiscount,Long paymentId){
     Payment payment = Payment.get(paymentId)
+
     if(applicableDiscount.discount.percentage)
       payment.accumulatedDiscount -= (payment.paymentAmount * applicableDiscount.discount.percentage)  / 100
-    else
+    else if(applicableDiscount.discount.amount)
       payment.accumulatedDiscount -= applicableDiscount.discount.amount
     
     payment.save()
