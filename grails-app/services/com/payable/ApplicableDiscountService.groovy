@@ -35,5 +35,15 @@ class ApplicableDiscountService {
     payment
 
   }
+  
+  def invalidateApplicableDiscountToAPayment(ApplicableDiscount applicableDiscount,Long paymentId){
+    Payment payment = Payment.get(paymentId)
+    if(applicableDiscount.discount.percentage)
+      payment.accumulatedDiscount -= (payment.paymentAmount * applicableDiscount.discount.percentage)  / 100
+    else
+      payment.accumulatedDiscount -= applicableDiscount.discount.amount
+    
+    payment.save()
+  }
 
 }
