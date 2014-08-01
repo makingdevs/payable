@@ -48,8 +48,7 @@ class ApplicableDiscountServiceSpec extends Specification {
       def referenceDate = Date.parse("dd/MM/yyyy",_referenceDate)
 
     when:
-      def applicableDiscounts = service.generateForPaymentWithPaymentSchemeWithReferenceDate(paymentScheme.id, referenceDate)
-
+      def applicableDiscounts = service.generateForPaymentWithPaymentSchemeWithReferenceDate(paymentScheme.id,referenceDate)
     then:
       applicableDiscounts.size() == _appliedDiscounts
       applicableDiscounts.every{ applicableDiscount -> applicableDiscount.applicableDiscountStatus == ApplicableDiscountStatus.VALID}
@@ -90,6 +89,29 @@ class ApplicableDiscountServiceSpec extends Specification {
       3250            | 650                   | 10          | ""        ||  975
       3250            | 650                   | ""          | 500       ||  1150
   } 
+
+  def "Invalidate an applicable discount to a payment if there is only a discount"(){
+    given: "A discount of a payment"
+      def discount = new Discount(percentage:_percentage,amount:_amount).save(validate:false)
+      def applicableDiscount = new  ApplicableDiscount(discount:discount).save(validate:false)
+      def payment = new Payment(paymentAmount:_paymentAmount,accumulatedDiscount:_accumulatedDiscount)
+      .addToApplicableDiscounts(applicableDiscount)
+      .save(validate:false)
+
+    when: "the service is called to quit that discount to an applicable discount"
+      service.invalidateApplicableDiscountToAPayment(applicableDiscount,payment.id)
+
+    then:
+      payment.applicableDiscounts.size() == 1
+      payment.paymentAmount == _paymentAmount
+      payment.accumulatedDiscount == _newAccumulatedDiscount
+
+    where:
+      _paymentAmount    | _accumulatedDiscount    | _percentage | _amount   ||  _newAccumulatedDiscount
+      100               | 10                      | 10          | ""        ||  0
+      750               | 112.5                   | 15          | null      ||  0
+      100               | 10                      | null        | 10        ||  0 
+  }
 
   private def createDiscounts(def previousDays){
     previousDays.collect{ day ->
