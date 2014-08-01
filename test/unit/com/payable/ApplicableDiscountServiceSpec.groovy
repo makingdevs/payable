@@ -142,7 +142,40 @@ class ApplicableDiscountServiceSpec extends Specification {
       750            |  125                   | 10            | ""       |  ""           |  50        ||  75
       750            |  150                   | 10            | ""       |  10           |  ""        ||  75
   }
-  
+
+  @Unroll("Given a payment with a payment amount of #_paymentAmount and two discounts of #_percentage1 % - \$ #_amount1 and #_percentage2 % - \$ #_amount2 with the accumulated discount of #_accumulatedDiscount, when its discounts have expired, it new accumulated discount will be of #_newAccumulatedDiscount") 
+  def "Invalidate the applicable discounts for a payment and recalculate it"(){
+    given:"A payment with its accumulated discounts whose expiration date is greater than today"
+
+      def applicableDiscounts = [new ApplicableDiscount(discount:new Discount(percentage:_percentage1,amount:_amount1).save(validate:false),
+                                                        expirationDate:new Date()+2,
+                                                        applicableDiscountStatus: ApplicableDiscountStatus.VALID).save(validate:false),
+                                 new ApplicableDiscount(discount:new Discount(percentage:_percentage2,amount:_amount2).save(validate:false),
+                                                        expirationDate:new Date()+6,
+                                                        applicableDiscountStatus: ApplicableDiscountStatus.VALID).save(validate:false)]
+
+      def payment = new Payment(paymentAmount:_paymentAmount,accumulatedDiscount:_accumulatedDiscount).save(validate:false)
+      applicableDiscounts.each{ applicableDiscount ->
+        payment.addToApplicableDiscounts(applicableDiscount) 
+      }
+      payment.save(validate:false)
+    
+    when: "the service to invalidate all the applicated discounts is called"
+      service.expireDiscountsAndRecalculatePayment() 
+
+    then:
+      payment.applicableDiscounts.size() == 2
+      payment.paymentAmount == _paymentAmount
+      payment.accumulatedDiscount == _newAccumulatedDiscount
+    
+    where:
+      _paymentAmount  | _accumulatedDiscount  | _percentage1  | _amount1  | _percentage2  | _amount2  ||  _newAccumulatedDiscount
+      100             | 25                    | 10            | null      | 15            | ""        ||  0   
+      100             | 25                    | null          | 10        | null          | 15        ||  0
+      750             | 125                   | 10            | ""        | ""            | 50        ||  0
+      750             | 150                   | null          | 75        | 10            | ""        ||  0
+  }
+
   private def createDiscounts(def previousDays){
     previousDays.collect{ day ->
       new Discount(previousDaysForCancelingDiscount:day).save(validate:false)
