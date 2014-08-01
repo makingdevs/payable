@@ -98,7 +98,7 @@ class ApplicableDiscountServiceSpec extends Specification {
       .addToApplicableDiscounts(applicableDiscount)
       .save(validate:false)
 
-    when: "the service is called to quit that discount to an applicable discount"
+    when: "the service is called to remove the discount to an applicable discount"
       service.invalidateApplicableDiscountToAPayment(applicableDiscount,payment.id)
 
     then:
@@ -113,6 +113,36 @@ class ApplicableDiscountServiceSpec extends Specification {
       100               | 10                      | null        | 10        ||  0 
   }
 
+  def "Invalidate an applicable discount to a payment if there is more than one discount"(){
+    given: "the payment discounts" 
+      def discounts = [new Discount(percentage:_percentage1,amount:_amount1).save(validate:false),
+                       new Discount(percentage:_percentage2,amount:_amount2).save(validate:false)]
+
+      def applicableDiscounts = [new ApplicableDiscount(discount:discounts[0]).save(validate:false),
+                                 new ApplicableDiscount(discount:discounts[1]).save(validate:false)]
+
+      def payment = new Payment(paymentAmount:_paymentAmount,accumulatedDiscount:_accumulatedDiscount)      
+      applicableDiscounts.each{ applicableDiscount ->
+        payment.addToApplicableDiscounts(applicableDiscount)
+      }
+      payment.save(validate:false)
+   
+    when: "the service to invalidate the discount to the payment is called"
+      service.invalidateApplicableDiscountToAPayment(applicableDiscounts[1],payment.id)
+    
+   then:
+      payment.applicableDiscounts.size() == 2
+      payment.paymentAmount == _paymentAmount
+      payment.accumulatedDiscount == _newAccumulatedDiscount
+   
+    where:
+      _paymentAmount |  _accumulatedDiscount  | _percentage1  | _amount1 | _percentage2  | _amount2   || _newAccumulatedDiscount
+      100            |  25                    | 10            | null     |  15           |  ""        ||  10 
+      100            |  25                    | 10            | ""       |  null         |  15        ||  10
+      750            |  125                   | 10            | ""       |  ""           |  50        ||  75
+      750            |  150                   | 10            | ""       |  10           |  ""        ||  75
+  }
+  
   private def createDiscounts(def previousDays){
     previousDays.collect{ day ->
       new Discount(previousDaysForCancelingDiscount:day).save(validate:false)
