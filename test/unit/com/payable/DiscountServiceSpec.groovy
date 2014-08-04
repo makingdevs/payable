@@ -24,4 +24,5 @@ class DiscountServiceSpec extends Specification {
     then:
       assert discountOfInstitution.size() == 1
   }
+
 }
