@@ -11,6 +11,11 @@ class PaymentSchemeServiceSpec extends Specification {
     given:"an organization"
       Organization organization = new Organization(name:"Escuela Superior De Cómputo").save(validate:false)
 
+    and: "a Concept"
+      Concept concept = new Concept(
+        description:"School trip",
+        organization:organization).save(validate:false)
+
     and: "a Surcharge"
       Surcharge surcharge = new Surcharge(amount:350).save(validate:false)
 
@@ -27,6 +32,7 @@ class PaymentSchemeServiceSpec extends Specification {
         paymentConcept:"School trip",
         surchargeId:surcharge.id,
         discountIds:[discount.id]) 
+
     when:
       def paymentScheme = service.savePaymentScheme(paymentGroupCommand) 
 
