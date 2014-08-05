@@ -10,17 +10,18 @@ class GenerationOfPaymentService {
     def payments = []
 
     paymentGroupCommand.instances.each{ instance ->
-      if(instance instanceof IPayable){
-        def paymentsForInstance = generatePaymentsForInstance(paymentGroupCommand) 
-        def paymentLink = PaymentLink.findByPaymentRef(instance.id) ?: new PaymentLink(paymentRef:instance.id,type:instance.class.simpleName)
-
-        paymentsForInstance.each{ paymentForInstance -> 
-          paymentLink.addToPayments(paymentForInstance) 
-          payments << paymentForInstance
-        } 
-
-        paymentLink.save()
+      if(!IPayable.class.isAssignableFrom(instance.class)){
+        throw new Exception("IPayable is not assignable from ${instance.class}")
       }
+      def paymentsForInstance = generatePaymentsForInstance(paymentGroupCommand) 
+      def paymentLink = PaymentLink.findByPaymentRef(instance.id) ?: new PaymentLink(paymentRef:instance.id,type:instance.class.simpleName)
+
+      paymentsForInstance.each{ paymentForInstance -> 
+        paymentLink.addToPayments(paymentForInstance) 
+        payments << paymentForInstance
+      } 
+
+      paymentLink.save()
     } 
 
     payments
