@@ -4,9 +4,9 @@ class ApplicableDiscountService {
 
   def generateForPaymentWithExpirationDate(def expirationDate,Long discountId){
     def discount = Discount.get(discountId)  
-    def applicableDiscount = new ApplicableDiscount()
-    applicableDiscount.expirationDate = expirationDate
-    applicableDiscount.discount = discount
+    def applicableDiscount = new ApplicableDiscount(expirationDate:expirationDate,
+                                                    discount:discount)
+    applicableDiscount.save()
     applicableDiscount
   }
 
@@ -15,8 +15,10 @@ class ApplicableDiscountService {
     PaymentScheme paymentScheme = PaymentScheme.get(paymentSchemaId) 
     paymentScheme.discounts.each{ discount ->
       def expirationDate = (referenceDate - discount.previousDaysForCancelingDiscount) 
-      if(expirationDate.clearTime() < new Date().clearTime())
-        applicableDiscounts << generateForPaymentWithExpirationDate(expirationDate,discount.id)  
+
+      if(referenceDate > expirationDate)
+        if(expirationDate.clearTime() > new Date().clearTime())
+          applicableDiscounts << generateForPaymentWithExpirationDate(expirationDate,discount.id)  
     }
 
     applicableDiscounts
