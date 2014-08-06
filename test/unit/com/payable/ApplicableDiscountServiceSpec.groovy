@@ -10,7 +10,7 @@ import spock.lang.Shared
 @Mock([Discount,PaymentScheme,Payment,ApplicableDiscount])
 class ApplicableDiscountServiceSpec extends Specification {
   
-  @Shared createDate = {  n -> (new Date() - n).format("dd/MM/yyyy")  }
+  @Shared createDate = {  n -> (new Date() + n).format("dd/MM/yyyy")  }
 
   @Unroll("Generate a discount with an expiration date #_expirationDate and percentage of #_percentage %")
   def "Generate an applicated discount with a due date and a discount"(){
@@ -49,6 +49,7 @@ class ApplicableDiscountServiceSpec extends Specification {
 
     when:
       def applicableDiscounts = service.generateForPaymentWithPaymentSchemeWithReferenceDate(paymentScheme.id,referenceDate)
+
     then:
       applicableDiscounts.size() == _appliedDiscounts
       applicableDiscounts.every{ applicableDiscount -> applicableDiscount.applicableDiscountStatus == ApplicableDiscountStatus.VALID}
@@ -56,13 +57,13 @@ class ApplicableDiscountServiceSpec extends Specification {
       applicableDiscounts*.discount*.previousDaysForCancelingDiscount.sort() == _appliedDays.sort()
 
     where:
-      _referenceDate  |  _previousDays  ||  _appliedDays  || _expectedDates                                 || _appliedDiscounts
-      createDate(5)   | [7]             ||  [7]           || [createDate(12)]                               ||  1
-      createDate(5)   | [5,14]          ||  [5,14]        || [createDate(10),createDate(19)]                ||  2
-      createDate(0)   | [0,14,21]       ||  [14,21]       || [createDate(14),createDate(21)]                ||  2 
-      createDate(0)   | [0]             ||  []            || []                                             ||  0
-      createDate(-5)  | [4,14]          ||  [14]          || [createDate(9)]                                ||  1
-      createDate(3)   | [7,14,0]        ||  [7,14,0]      || [createDate(10),createDate(17),createDate(3)]  ||  3
+      _referenceDate  |  _previousDays  |  _appliedDays  | _expectedDates                                   || _appliedDiscounts
+      createDate(5)   | [3]             |  [3]           | [createDate(2)]                                  ||  1
+      createDate(5)   | [5,14]          |  []            | []                                               ||  0
+      createDate(31)  | [0,14,21]       |  [14,21]       | [createDate(17),createDate(10)]                  ||  2
+      createDate(0)   | [5]             |  []           | []                                               ||  0
+      createDate(-5)  | [4,14]          |  []            | []                                               ||  0
+      createDate(15)  | [7,14,10]       |  [7,14,10]     | [createDate(8),createDate(1),createDate(5)]      ||  3
   }
 
   def "Add an applicable discount to a payment"(){
@@ -72,10 +73,11 @@ class ApplicableDiscountServiceSpec extends Specification {
       def discount = new Discount(percentage:_percentage,
                                   amount:_amount).save(validate:false) 
       def applicableDiscount = new ApplicableDiscount(discount:discount).save(validate:false,discount:discount)
+
     when:
       def numberOfApplicableDiscounts = payment?.applicableDiscounts?.size() ?: 0
       def expectedPayment = service.addApplicableDiscountToAPayment(applicableDiscount,payment.id)
-        
+
     then:
       expectedPayment.applicableDiscounts.size() == numberOfApplicableDiscounts + 1
       expectedPayment.paymentAmount == _paymentAmount
