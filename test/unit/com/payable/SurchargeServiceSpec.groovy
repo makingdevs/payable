@@ -22,21 +22,21 @@ class SurchargeServiceSpec extends Specification {
 
   void "Expire the payments if the dueDate is less than today and calculate the Surcharge"(){
     given: "A payment with a Surcharge"
-     def payment = _payment
-     payment.surcharge = _surcharge
-     payment.save()    
+      def payment = _payment
+      payment.surcharge = _surcharge
+      payment.save(validate:false) 
 
     when:
       service.expirePaymentsAndCalculateAccumulatedSurcharge()
 
     then:
-      payment.paymentAmount == _newPaymentAmount
+      payment.accumulatedSurcharges == _accumulatedSurcharges
 
     where:
-      _payment                                                 | _surcharge                     || _newPaymentAmount
-      new Payment(dueDate: new Date()-7,paymentAmount:2000)    | new Surcharge(amount:100)      || 1900
-      new Payment(dueDate: new Date()-7,paymentAmount:5890)    | new Surcharge(percentage:10)   || 5301
-      new Payment(dueDate: new Date(),paymentAmount:4000)      | null                           || 4000
+      _payment                                                 | _surcharge                     || _accumulatedSurcharges
+      new Payment(dueDate: new Date()-7,paymentAmount:2000)    | new Surcharge(amount:100)      || 100
+      new Payment(dueDate: new Date()-7,paymentAmount:5890)    | new Surcharge(percentage:10)   || 589
+      new Payment(dueDate: new Date(),paymentAmount:4000)      | null                           || 0
   }
 
 }
