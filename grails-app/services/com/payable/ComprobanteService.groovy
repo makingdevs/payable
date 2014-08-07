@@ -9,6 +9,7 @@ class ComprobanteService {
 
   def agregarComprobanteAPago(Long pagoId, file) {
     S3Asset receipt = new S3Asset()
+    receipt.options.addAsync = 'false'
     Pago pago = Pago.get(pagoId)
     def tmp = s3AssetService.getNewTmpLocalFile(file.contentType)
     file.transferTo(tmp)
