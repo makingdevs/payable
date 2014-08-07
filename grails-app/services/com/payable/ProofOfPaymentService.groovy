@@ -1,8 +1,25 @@
 package com.payable
 
+import org.grails.s3.S3Asset
+
 class ProofOfPaymentService {
   
   def s3AssetService
+
+  def addProofOfPayment(Long paymentId, file){
+    S3Asset proofOfPayment = new S3Asset()
+    proofOfPayment.options.addAsync = 'false'
+    Payment payment = Payment.get(paymentId)
+    def tmp = s3AssetService.getNewTmpLocalFile(file.contentType)
+    file.transferTo(tmp)
+    proofOfPayment.newFile(tmp)
+    proofOfPayment.mimeType = file.contentType
+    s3AssetService.put(proofOfPayment)
+    payment.proofOfPayment = proofOfPayment
+    payment.paymentStatus = PaymentStatus.PROCESS
+    payment.save()
+    payment
+  }
 
   def approvePayment(def transactionId,def paymentDate,def paymentType){
     def payment = Payment.findByTransactionId(transactionId)
