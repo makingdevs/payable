@@ -6,7 +6,7 @@ import org.grails.s3.S3Asset
 import org.grails.s3.S3AssetService
 
 @TestFor(ProofOfPaymentService)
-@Mock([Payment])
+@Mock([Payment,ApplicableDiscount])
 class ProofOfPaymentServiceSpec extends Specification {
 
   def "Conciliate a payment with a correct proof of payment"(){
@@ -15,7 +15,11 @@ class ProofOfPaymentServiceSpec extends Specification {
                                 dueDate: new Date()+10,
                                 paymentAmount: 1000,
                                 transactionId:"1234567890",
-                                proofOfPayment:new S3Asset()).save(validate:false)
+                                proofOfPayment:new S3Asset())
+
+      def applicableDiscount = new ApplicableDiscount(applicableDiscountStatus: ApplicableDiscountStatus.VALID)
+      payment.addToApplicableDiscounts(applicableDiscount)
+      payment.save(validate:false)
 
     when: 
       def approvedPayment = service.approvePayment("1234567890",new Date() - 2, _paymentType)  
@@ -24,6 +28,7 @@ class ProofOfPaymentServiceSpec extends Specification {
       approvedPayment.paymentStatus == PaymentStatus.PAID
       approvedPayment.dueDate
       approvedPayment.paymentType == _paymentType
+      approvedPayment.applicableDiscounts.first().applicableDiscountStatus == ApplicableDiscountStatus.APPLIED 
 
     where:
       _paymentType << [PaymentType.WIRE_TRANSFER, PaymentType.REFERENCED_DEPOSIT, PaymentType.CHECK, PaymentType.CASH, PaymentType.TERMINAL]
