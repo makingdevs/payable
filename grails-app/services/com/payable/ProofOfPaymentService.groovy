@@ -10,11 +10,11 @@ class ProofOfPaymentService {
     payment.paymentDate = paymentDate
     payment.paymentStatus = PaymentStatus.PAID
     def applicableDiscounts = payment.applicableDiscounts.findAll { 
-      applicableDiscountStatus == ApplicableDiscountStatus.VALID 
+      it.applicableDiscountStatus == ApplicableDiscountStatus.VALID 
     }
 
-    applicableDiscounts.each{       
-      applicableDiscountStatus = ApplicableDiscountStatus.APPLIED 
+    applicableDiscounts.each{ applicableDiscount -> 
+      applicableDiscount.applicableDiscountStatus = ApplicableDiscountStatus.APPLIED 
     }
 
     applicableDiscounts*.save()
