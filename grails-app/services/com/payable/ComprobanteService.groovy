@@ -34,6 +34,19 @@ class ComprobanteService {
     pago
   }
 
+  def aprobarPago(String transactionId, Date fechaDePago, def tipoPago,String referencia){
+    def pago = Pago.findByTransactionId(transactionId)
+    pago.tipoDePago = TipoDePago.getAt(tipoPago)
+    pago.fechaDePago = fechaDePago
+    pago.referencia = referencia
+    pago.estatusDePago = EstatusDePago.PAGADO
+    pago.descuentosAplicables.findAll { da ->
+      da.descuentoAplicableStatus = DescuentoAplicableStatus.VIGENTE
+    }*.descuentoAplicableStatus = DescuentoAplicableStatus.APLICADO
+    pago.save()
+    pago
+  }
+
   def rechazarPago(String transactionId) {
     def pago = Pago.findByTransactionId(transactionId)
     s3AssetService.delete(pago.comprobanteDePago)
