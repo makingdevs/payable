@@ -11,6 +11,23 @@ class RecargoService {
       recargo.save()
     }
   }
+  
+  def exprirarPagosYCalcularRecargo() {
+    def pagos = Pago.withCriteria{
+      lt('fechaDeVencimiento', new Date())
+      inList('estatusDePago', [EstatusDePago.CREADO,EstatusDePago.RECHAZADO])
+    }
+    
+    pagos.each{ pago ->
+      if(pago.recargo)
+        pago.recargosAcumulados = calcularRecargoAcumulado(pago.recargo, pago.cantidadDePago)
+      pago.estatusDePago = EstatusDePago.VENCIDO
+      pago.save()
+    }
+    
+    pagos
+  }
+
   def calcularRecargoAcumulado(Recargo recargo, def cantidadDePago) {
   	if (recargo.porcentaje)
   		cantidadDePago / 100 * recargo.porcentaje
