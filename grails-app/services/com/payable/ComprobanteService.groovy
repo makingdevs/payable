@@ -39,7 +39,7 @@ class ComprobanteService {
     pago.tipoDePago = TipoDePago.getAt(tipoPago)
     pago.fechaDePago = fechaDePago
     pago.referencia = referencia
-    pago.estatusDePago = EstatusDePago.PAGADO
+    pago.estatusDePago = (pago.tipoDePago == TipoDePago.EFECTIVO ? EstatusDePago.PAGADO : EstatusDePago.PROCESO)
     pago.descuentosAplicables.findAll { da ->
       da.descuentoAplicableStatus = DescuentoAplicableStatus.VIGENTE
     }*.descuentoAplicableStatus = DescuentoAplicableStatus.APLICADO
