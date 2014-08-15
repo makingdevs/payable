@@ -49,7 +49,8 @@ class ComprobanteService {
 
   def rechazarPago(String transactionId) {
     def pago = Pago.findByTransactionId(transactionId)
-    s3AssetService.delete(pago.comprobanteDePago)
+    if(pago.comprobanteDePago)
+      s3AssetService.delete(pago.comprobanteDePago)
     pago.comprobanteDePago = null
     pago.estatusDePago = EstatusDePago.RECHAZADO
     pago.save()
