@@ -3,9 +3,8 @@ package com.payable
 class EsquemaDePagoService {
 
   def buscarOSalvarEsquemaDePago(GrupoPagoCommand gpc) {
-    Concepto concepto = Concepto.findByDescripcion(gpc.conceptoDePago)
+    Concepto concepto = Concepto.findByDescripcionAndOrganizacion(gpc.conceptoDePago,gpc.organizacion)
     def esquemaDePago = EsquemaDePago.findByConcepto(concepto) ?: new EsquemaDePago()
-
     if (!esquemaDePago.id) {
       esquemaDePago.cantidadDePago = gpc.cantidadDePago
       esquemaDePago.concepto = concepto
@@ -16,7 +15,7 @@ class EsquemaDePagoService {
           esquemaDePago.addToDescuentos(descuento)
         }
       }
-    esquemaDePago.save(flush:true)
+      esquemaDePago.save(flush:true)
     }
 
     esquemaDePago
