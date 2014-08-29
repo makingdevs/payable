@@ -5,7 +5,7 @@ class Descuento {
   String nombreDeDescuento
   BigDecimal porcentaje
   BigDecimal cantidad
-  Integer diasPreviosParaCancelarDescuento = 1
+  Integer diasPreviosParaCancelarDescuento = 0
 
   Date dateCreated
   Date lastUpdated
