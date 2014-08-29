@@ -9,14 +9,19 @@ class DescuentoAplicableService {
     descuentoAplicable.descuento = descuento
     descuentoAplicable
   }
-
-  def generarParaPagoConEsquemaDePagoConFechaReferencia(Long esquemaDePagoId, Date fechaReferencia){
+  
+  def generarParaPagoConEsquemaDePagoConFechaReferencia(Long esquemaDePagoId, Date fechaReferencia, def fechasDeExpiracion){
     def descuentosAplicables = []
+    def fechaDeExpiracion
     EsquemaDePago esquemaDePago = EsquemaDePago.get(esquemaDePagoId)
-    esquemaDePago.descuentos.each{ d ->
-      def fechaDeExpiracion = (fechaReferencia - d.diasPreviosParaCancelarDescuento)
-      if(fechaDeExpiracion > new Date())
-        descuentosAplicables << generarParaPagoConVencimiento((fechaReferencia - d.diasPreviosParaCancelarDescuento),d.id)
+    esquemaDePago.descuentos.sort{ descuento -> descuento.id}.eachWithIndex{ descuento, i ->
+      if(descuento.diasPreviosParaCancelarDescuento)
+        fechaDeExpiracion = (fechaReferencia - descuento.diasPreviosParaCancelarDescuento)
+      else
+        fechaDeExpiracion = fechaDeExpiracion[i] 
+
+      if(fechaDeExpiracion >= new Date())
+        descuentosAplicables << generarParaPagoConVencimiento(fechaDeExpiracion,descuento.id)
     }
     descuentosAplicables
   }
