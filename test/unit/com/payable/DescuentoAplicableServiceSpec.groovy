@@ -45,7 +45,7 @@ class DescuentoAplicableServiceSpec extends Specification {
       esquemaDePago.save(validate:false)
       def fechaDeReferencia = Date.parse("dd/MM/yyyy",_fechaDeReferencia)
     when:
-      def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia)
+      def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia,[])
     then:
       descuentosAplicables.size() ==  _descuentosAplicados
       descuentosAplicables.every { da -> da.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE }
