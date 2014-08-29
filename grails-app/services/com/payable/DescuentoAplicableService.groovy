@@ -18,7 +18,7 @@ class DescuentoAplicableService {
       if(descuento.diasPreviosParaCancelarDescuento)
         fechaDeExpiracion = (fechaReferencia - descuento.diasPreviosParaCancelarDescuento)
       else
-        fechaDeExpiracion = fechaDeExpiracion[i] 
+        fechaDeExpiracion = fechasDeExpiracion[i] 
 
       if(fechaDeExpiracion >= new Date())
         descuentosAplicables << generarParaPagoConVencimiento(fechaDeExpiracion,descuento.id)
