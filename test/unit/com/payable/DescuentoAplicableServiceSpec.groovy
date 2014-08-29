@@ -58,7 +58,7 @@ class DescuentoAplicableServiceSpec extends Specification {
       descuentosAplicables*.fechaDeExpiracion*.format("dd/MM/yyyy").sort() == _fechasEsperadas.sort()
     where:
       _fechaDeReferencia | _fechasDeExpiracion                            | _fechasEsperadas                                | _numeroDescuentosAplicados
-      creaFecha(3)       | [(new Date()+1),(new Date()+1),(new Date()+2)] | [creaFecha(1),creaFecha(1),creaFecha(2)]  | 3 
+      creaFecha(3)       | [(new Date()+1),(new Date()+1),(new Date()+2)] | [creaFecha(1),creaFecha(1),creaFecha(2)]        | 3 
   }
   
   @Unroll("Con la fecha de referencia #_fechaDeReferencia y los días antes de expirar #_diasParaCancelar, se aplican #_descuentosAplicados con expiración #_fechasEsperadas")
