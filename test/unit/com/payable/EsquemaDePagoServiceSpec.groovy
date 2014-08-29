@@ -33,6 +33,7 @@ class EsquemaDePagoServiceSpec extends Specification {
       descuento.save(validate:false)
     and:
       GrupoPagoCommand gpc = new GrupoPagoCommand()
+      gpc.organizacion = institucion 
       gpc.cantidadDePago = 13000
       gpc.conceptoDePago = "concepto"
       gpc.recargoId = recargo.id
