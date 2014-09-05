@@ -16,7 +16,7 @@ class Descuento {
     nombreDeDescuento blank:false, size:1..150
     porcentaje nullable: true, min:0.0
     cantidad nullable: true, min:0.0
-    diasPreviosParaCancelarDescuento min:1
+    diasPreviosParaCancelarDescuento()
   }
 
   String toString(){
