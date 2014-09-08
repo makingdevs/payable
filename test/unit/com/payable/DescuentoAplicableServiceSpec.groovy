@@ -36,6 +36,31 @@ class DescuentoAplicableServiceSpec extends Specification {
       "Descuento X"       | aleatorioDe(10) | aleatorioDe(30) | new Date() - aleatorioDe(21)
   }
 
+  @Unroll("Con la fecha de referencia #_fechaDeReferencia y un conjunto de fechas de expiracion, se aplican #_descuentosAplicados con expiración #_fechasEsperadas")
+  def "Generar descuentos aplicables a partir de un equema de pago"(){
+    given: "Un esquema de pago con descuentos y sus fechas de expiración"
+      def descuentos = [new Descuento().save(validate:false),
+                        new Descuento().save(validate:false),
+                        new Descuento().save(validate:false)]
+      
+      def esquemaDePago = new EsquemaDePago().save(validate:false)
+      descuentos.each{ descuento ->
+        esquemaDePago.addToDescuentos(descuento)
+      }
+      esquemaDePago.save(validate:false)
+      
+      def fechaDeReferencia = Date.parse("dd/MM/yyyy",_fechaDeReferencia)
+    when:
+      def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(esquemaDePago.id,fechaDeReferencia,_fechasDeExpiracion)
+    then:
+      descuentosAplicables.size() == _numeroDescuentosAplicados 
+      descuentosAplicables.every { da -> da.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE }
+      descuentosAplicables*.fechaDeExpiracion*.format("dd/MM/yyyy").sort() == _fechasEsperadas.sort()
+    where:
+      _fechaDeReferencia | _fechasDeExpiracion                            | _fechasEsperadas                                | _numeroDescuentosAplicados
+      creaFecha(3)       | [(new Date()+1),(new Date()+1),(new Date()+2)] | [creaFecha(1),creaFecha(1),creaFecha(2)]        | 3 
+  }
+  
   @Unroll("Con la fecha de referencia #_fechaDeReferencia y los días antes de expirar #_diasParaCancelar, se aplican #_descuentosAplicados con expiración #_fechasEsperadas")
   def "Generar descuentos aplicados de un esquema de pago"() {
     given:
@@ -45,7 +70,7 @@ class DescuentoAplicableServiceSpec extends Specification {
       esquemaDePago.save(validate:false)
       def fechaDeReferencia = Date.parse("dd/MM/yyyy",_fechaDeReferencia)
     when:
-      def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia)
+      def descuentosAplicables = service.generarParaPagoConEsquemaDePagoConFechaReferencia(1L, fechaDeReferencia,[])
     then:
       descuentosAplicables.size() ==  _descuentosAplicados
       descuentosAplicables.every { da -> da.descuentoAplicableStatus == DescuentoAplicableStatus.VIGENTE }

@@ -36,24 +36,6 @@ class PagoService {
     ]
   }
 
-  def exprirarPagosYCalcularRecargo() {
-    def pagos = Pago.withCriteria{
-      le('fechaDeVencimiento', new Date())
-      eq('estatusDePago', EstatusDePago.CREADO)
-    }
-    pagos << Pago.withCriteria{
-      le('fechaDeVencimiento', new Date())
-      eq('estatusDePago', EstatusDePago.RECHAZADO)
-    }
-    pagos.flatten().each{ pago ->
-      if (pago.recargo)
-        pago.recargosAcumulados = recargoService.calcularRecargoAcumulado(pago.recargo, pago.cantidadDePago)
-      pago.estatusDePago = EstatusDePago.VENCIDO
-      pago.save()
-    }
-    pagos.flatten()
-  }
-
   private def findAllPagosInUsuario(def usuario) {
     def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
     def pagos = []

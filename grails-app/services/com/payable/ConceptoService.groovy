@@ -12,7 +12,7 @@ class ConceptoService {
   }
 
   def buscarOSalvarConceptoDePago(Organizacion organizacion, String descripcionDeConcepto) {
-    Concepto concepto = Concepto.findByDescripcion(descripcionDeConcepto) ?: new Concepto()
+    Concepto concepto = Concepto.findByDescripcionAndOrganizacion(descripcionDeConcepto,organizacion) ?: new Concepto()
 
     if(!concepto.id) {
       concepto.descripcion = descripcionDeConcepto
