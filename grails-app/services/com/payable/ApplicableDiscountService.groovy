@@ -2,7 +2,7 @@ package com.payable
 
 class ApplicableDiscountService {
 
-  def generateForPaymentWithExpirationDate(def expirationDate,Long discountId){
+  def generateApplicableDiscountForPaymentWithExpirationDate(def expirationDate,Long discountId){
     def discount = Discount.get(discountId)  
     def applicableDiscount = new ApplicableDiscount(expirationDate:expirationDate,
                                                     discount:discount)
@@ -10,16 +10,20 @@ class ApplicableDiscountService {
     applicableDiscount
   }
 
-  def generateForPaymentWithPaymentSchemeWithReferenceDate(Long paymentSchemaId,Date referenceDate){
+  def generateApplicableDiscountsForPaymentWithPaymentSchemeAndReferenceDate(Long paymentSchemaId,Date referenceDate, def expirationDates = []){
     def applicableDiscounts = []
-    PaymentScheme paymentScheme = PaymentScheme.get(paymentSchemaId) 
-    paymentScheme.discounts.each{ discount ->
-      def expirationDate = (referenceDate - discount.previousDaysForCancelingDiscount) 
+    def expirationDate
 
-      if(referenceDate > expirationDate)
-        if(expirationDate.clearTime() > new Date().clearTime())
-          applicableDiscounts << generateForPaymentWithExpirationDate(expirationDate,discount.id)  
-    }
+    PaymentScheme paymentScheme = PaymentScheme.get(paymentSchemaId) 
+    paymentScheme.discounts.sort{ discount -> discount.id}.eachWithIndex{ discount, i ->
+      if(discount.previousDaysForCancelingDiscount)
+        expirationDate = (referenceDate - discount.previousDaysForCancelingDiscount) 
+      else
+        expirationDate = expirationDates[i]
+      
+      if(referenceDate > expirationDate && expirationDate?.clearTime() > new Date().clearTime())
+        applicableDiscounts << generateApplicableDiscountForPaymentWithExpirationDate(expirationDate,discount.id)  
+    } 
 
     applicableDiscounts
   }

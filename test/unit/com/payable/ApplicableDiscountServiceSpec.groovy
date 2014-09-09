@@ -23,7 +23,7 @@ class ApplicableDiscountServiceSpec extends Specification {
 
       def expirationDate = _expirationDate
     when:
-      def applicableDiscount = service.generateForPaymentWithExpirationDate(expirationDate,1L)
+      def applicableDiscount = service.generateApplicableDiscountForPaymentWithExpirationDate(expirationDate,1L)
 
     then:
       applicableDiscount.applicableDiscountStatus == ApplicableDiscountStatus.VALID
@@ -48,7 +48,7 @@ class ApplicableDiscountServiceSpec extends Specification {
       def referenceDate = Date.parse("dd/MM/yyyy",_referenceDate)
 
     when:
-      def applicableDiscounts = service.generateForPaymentWithPaymentSchemeWithReferenceDate(paymentScheme.id,referenceDate)
+      def applicableDiscounts = service.generateApplicableDiscountsForPaymentWithPaymentSchemeAndReferenceDate(paymentScheme.id,referenceDate)
 
     then:
       applicableDiscounts.size() == _appliedDiscounts
@@ -61,7 +61,7 @@ class ApplicableDiscountServiceSpec extends Specification {
       createDate(5)   | [3]             |  [3]           | [createDate(2)]                                  ||  1
       createDate(5)   | [5,14]          |  []            | []                                               ||  0
       createDate(31)  | [0,14,21]       |  [14,21]       | [createDate(17),createDate(10)]                  ||  2
-      createDate(0)   | [5]             |  []           | []                                               ||  0
+      createDate(0)   | [5]             |  []            | []                                               ||  0
       createDate(-5)  | [4,14]          |  []            | []                                               ||  0
       createDate(15)  | [7,14,10]       |  [7,14,10]     | [createDate(8),createDate(1),createDate(5)]      ||  3
   }
@@ -179,9 +179,11 @@ class ApplicableDiscountServiceSpec extends Specification {
   }
 
   private def createDiscounts(def previousDays){
-    previousDays.collect{ day ->
-      new Discount(previousDaysForCancelingDiscount:day).save(validate:false)
+    def discounts = []
+    previousDays.each{ day ->
+      discounts << new Discount(previousDaysForCancelingDiscount:day).save(validate:false)
     } 
+    discounts
   }
 
   private def randomOf(int n){
