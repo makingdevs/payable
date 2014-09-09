@@ -38,7 +38,7 @@ class ApplicableDiscountServiceSpec extends Specification {
       "X Discount"    |  randomOf(10)   |   randomOf(30)    | new Date() - randomOf(21)
   } 
 
-  @Unroll("With the reference date #_referenceDate and the previous expiration days #_previousDays, are applied #_appliedDiscounts with expiration #_expectedDates")
+  @Unroll("With the reference date #_referenceDate and the previous expiration days #_previousDays, are applied #_appliedDiscounts discounts with its expiration dates #_expectedDates")
   def "Generate applied discounts of a paymente scheme"(){
     given:
       def discounts = createDiscounts(_previousDays)
@@ -64,6 +64,33 @@ class ApplicableDiscountServiceSpec extends Specification {
       createDate(0)   | [5]             |  []            | []                                               ||  0
       createDate(-5)  | [4,14]          |  []            | []                                               ||  0
       createDate(15)  | [7,14,10]       |  [7,14,10]     | [createDate(8),createDate(1),createDate(5)]      ||  3
+  }
+
+  @Unroll("With the reference date #_referenceDate and a set of expiration dates for the discount, will be applied the #_applicableDiscounts with expiration dates #expectedDates")
+  def "Generate applicable discounts from a payment scheme"(){
+    given: "A payment scheme with discounts and its expiration dates"
+      def discounts = [new Discount().save(validate:false),
+                       new Discount().save(validate:false),
+                       new Discount().save(validate:false)]
+      
+      def paymentScheme = new PaymentScheme().save(validate:false)
+      discounts.each{ discount ->
+        paymentScheme.addToDiscounts(discount) 
+      }
+      paymentScheme.save(validate:false)
+
+      def referenceDate = Date.parse("dd/MM/yyyy",_referenceDate)
+    when:
+      def applicableDiscounts = service.generateApplicableDiscountsForPaymentWithPaymentSchemeAndReferenceDate(paymentScheme.id,referenceDate,_expirationDates)
+      
+    then:
+      applicableDiscounts.size() == _numberOfApplicableDiscounts
+      applicableDiscounts.every{ applicableDiscount -> applicableDiscount.applicableDiscountStatus == ApplicableDiscountStatus.VALID } 
+      applicableDiscounts*.expirationDate*.format("dd/MM/yyyy").sort() == _expectedDates.sort() 
+
+    where:
+      _referenceDate     | _expirationDates                               | _expectedDates                                  | _numberOfApplicableDiscounts
+      createDate(3)      | [(new Date()+1),(new Date()+1),(new Date()+2)] | [createDate(1),createDate(1),createDate(2)]     | 3 
   }
 
   def "Add an applicable discount to a payment"(){
