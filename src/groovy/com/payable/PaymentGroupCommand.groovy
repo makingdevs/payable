@@ -7,9 +7,14 @@ class PaymentGroupCommand {
   String paymentConcept
   Date dueDate
   Integer daysPaymentDue
+
+  
   Organization organization 
   def instances = []
-  def discountIds = []
+
+  List<Long> discountIds 
+  List<Date> expirationDatesForDiscounts
+
   def months = []
   def doublePayment = [] 
 
