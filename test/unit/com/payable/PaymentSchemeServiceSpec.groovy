@@ -28,6 +28,7 @@ class PaymentSchemeServiceSpec extends Specification {
 
     and: 
       PaymentGroupCommand paymentGroupCommand = new PaymentGroupCommand(
+        organization:organization, 
         paymentAmount:13000,
         paymentConcept:"School trip",
         surchargeId:surcharge.id,
