@@ -21,12 +21,17 @@ class ProofOfPaymentService {
     payment
   }
 
-  def approvePayment(def transactionId,def paymentDate,def paymentType){
+  def approvePayment(def transactionId,def paymentDate,def paymentType, String reference = ""){
     def payment = Payment.findByTransactionId(transactionId)
     payment.paymentType = paymentType
     payment.paymentDate = paymentDate
-    payment.paymentStatus = PaymentStatus.PAID
-    def applicableDiscounts = payment.applicableDiscounts.findAll { 
+    payment.reference = reference;
+    if(payment.paymentType == PaymentType.CASH || payment.paymentStatus == PaymentStatus.PROCESS)
+      payment.paymentStatus = PaymentStatus.PAID 
+    else
+      payment.paymentStatus = PaymentStatus.PROCESS 
+
+    def applicableDiscounts = payment.applicableDiscounts.findAll {
       it.applicableDiscountStatus == ApplicableDiscountStatus.VALID 
     }
 
@@ -41,7 +46,9 @@ class ProofOfPaymentService {
   
   def rejectPayment(transactionId){
     def payment = Payment.findByTransactionId(transactionId)
-    s3AssetService.delete(payment.proofOfPayment)
+    if(payment.proofOfPayment)
+      s3AssetService.delete(payment.proofOfPayment)
+
     payment.proofOfPayment = null
     payment.paymentStatus = PaymentStatus.REJECTED
     payment.save()
