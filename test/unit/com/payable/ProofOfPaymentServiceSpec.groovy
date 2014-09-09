@@ -25,13 +25,14 @@ class ProofOfPaymentServiceSpec extends Specification {
       def approvedPayment = service.approvePayment("1234567890",new Date() - 2, _paymentType)  
 
     then: 
-      approvedPayment.paymentStatus == PaymentStatus.PAID
+      approvedPayment.paymentStatus == _paymentStatus 
       approvedPayment.dueDate
       approvedPayment.paymentType == _paymentType
       approvedPayment.applicableDiscounts.first().applicableDiscountStatus == ApplicableDiscountStatus.APPLIED 
 
     where:
       _paymentType << [PaymentType.WIRE_TRANSFER, PaymentType.REFERENCED_DEPOSIT, PaymentType.CHECK, PaymentType.CASH, PaymentType.TERMINAL]
+      _paymentStatus << [PaymentStatus.PROCESS, PaymentStatus.PROCESS, PaymentStatus.PROCESS, PaymentStatus.PAID, PaymentStatus.PROCESS]
   }
 
   def "Conciliate a payment with an incorrect proof of payment indicating if the payment is not valid"(){
