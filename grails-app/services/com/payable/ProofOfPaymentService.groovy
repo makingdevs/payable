@@ -55,9 +55,9 @@ class ProofOfPaymentService {
     payment
   } 
   
-  def bytesOfProofOfPayment(pagoId){
-    def pago = Pago.get(pagoId)
-    def url = new URL(pago.comprobanteDePago.url())
+  def bytesOfProofOfPayment(paymentId){
+    def payment = Payment.get(paymentId)
+    def url = new URL(payment.proofOfPayment.url())
     url.getBytes()
   }
 
