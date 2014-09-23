@@ -3,5 +3,5 @@
   <li>
    ${clazz}   
   </li> 
-<g:each>
+</g:each>
 </ul>
