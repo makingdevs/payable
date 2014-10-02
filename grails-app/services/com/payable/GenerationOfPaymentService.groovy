@@ -32,7 +32,6 @@ class GenerationOfPaymentService {
     def payments = []
     def surcharge = Surcharge.get(paymentGroupCommand.surchargeId)
     def dueDates = getDates(months,paymentGroupCommand.dueDate,paymentGroupCommand.daysPaymentDue)
-    
     dueDates.each{ dueDate ->
       Payment payment = new Payment()
       payment.paymentConcept = paymentGroupCommand.paymentConcept
@@ -59,11 +58,10 @@ class GenerationOfPaymentService {
     Calendar cal = Calendar.getInstance()
     cal.setTime(dueDate)
     def month = cal.get(Calendar.MONTH)
-    doublePayment.contains(month.toString()) 
+    doublePayment.contains(month) 
   }
 
   private def getDates(def months,Date dueDate,Integer daysPaymentDue){
-  
     def dates = []
 
     Calendar cal = Calendar.getInstance()
@@ -84,15 +82,15 @@ class GenerationOfPaymentService {
 
       switch(m){
         case {m < month}:
-          cal.set(year+1,month,day)
+          cal.set(year+1,m,day)
           dates.add(cal.getTime())
         break
         case {m > month}:
-          cal.set(year,month,day)
+          cal.set(year,m,day)
           dates.add(cal.getTime())
         break
         case {m == month}:
-          cal.set(year,month,day)
+          cal.set(year,m,day)
           dates.add(cal.getTime())
         break
       }
