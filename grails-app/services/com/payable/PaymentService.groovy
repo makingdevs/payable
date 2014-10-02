@@ -21,7 +21,7 @@ class PaymentService {
       throw new RuntimeException("IPayable is not assignable from ${instance.class}")
     }
     def paymentLink = PaymentLink.findByPaymentRefAndType(instance.id,instance.class.simpleName)
-    paymentLink.payments
+    paymentLink?.payments
   }
 
   def findAllPaymentsForTheInstances(instances){
