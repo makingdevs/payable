@@ -155,7 +155,7 @@ class GenerationOfPaymentServiceSpec extends Specification {
         new Concept(organization:_organization,paymentConcept:paymentConcept).save(validate:false)
       }
       service.conceptService = conceptServiceMock.createMock()
-    
+
     when:
       def payments = service.generatePaymentsForGroup(paymentGroupCommand)
       conceptServiceMock.verify()
@@ -175,8 +175,7 @@ class GenerationOfPaymentServiceSpec extends Specification {
   
   def "Generate a payment book with double payments for a litter"(){
     given:
-      def organization = new Organization()
-      organization.save(validate:false)
+      def organization = new Organization().save(validate:false)
 
       PaymentGroupCommand paymentGroupCommand = new PaymentGroupCommand(
         paymentConcept: _paymentConcept,
