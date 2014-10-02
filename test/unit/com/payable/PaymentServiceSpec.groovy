@@ -71,5 +71,18 @@ class PaymentServiceSpec extends Specification {
     then:
       payments.size() == 3
   }
+ 
+  def "Should get the payments grouped by status"(){
+    given:
+      def instances = [new PaymentWithImplements().save()]
+      def paymentLink1 = service.createPaymentsForThisInstance(instances[0],
+                        [new Payment(paymentStatus:PaymentStatus.EXPIRED),
+                         new Payment(paymentStatus:PaymentStatus.REJECTED)])  
+    when:
+      def payments = service.findAllPaymentsGroupedByStatus(instances)
+    then:
+      payments.expiredPayments.size() == 1
+      payments.rejectedPayments.size() == 1
+  }
 
 }
