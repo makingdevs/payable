@@ -39,7 +39,7 @@ class PaymentService {
     
     paymentsGroupedByStatus.createdPayments = payments.findAll{ it?.paymentStatus == PaymentStatus.CREATED }  
     paymentsGroupedByStatus.paymentsInProcess = payments.findAll{ it?.paymentStatus == PaymentStatus.PROCESS }
-    paymentsGroupedByStatus.reconciliedPayments = payments.findAll { it?.paymentStatus == PaymentStatus.PAID } 
+    paymentsGroupedByStatus.reconciledPayments = payments.findAll { it?.paymentStatus == PaymentStatus.PAID } 
     paymentsGroupedByStatus.rejectedPayments = payments.findAll { it?.paymentStatus == PaymentStatus.REJECTED }
     paymentsGroupedByStatus.expiredPayments = payments.findAll { it?.paymentStatus == PaymentStatus.EXPIRED }
 
