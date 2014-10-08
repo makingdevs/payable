@@ -15,12 +15,12 @@ class ApplicableDiscountService {
     def expirationDate
 
     PaymentScheme paymentScheme = PaymentScheme.get(paymentSchemaId) 
-    paymentScheme.discounts.sort{ discount -> discount.id}.eachWithIndex{ discount, i ->
+    paymentScheme.discounts?.sort{ discount -> discount.id}.eachWithIndex{ discount, i ->
       if(discount.previousDaysForCancelingDiscount)
         expirationDate = (referenceDate - discount.previousDaysForCancelingDiscount) 
-      else
+      else if(expirationDates)
         expirationDate = expirationDates[i]
-      
+
       if(referenceDate > expirationDate && expirationDate?.clearTime() > new Date().clearTime())
         applicableDiscounts << generateApplicableDiscountForPaymentWithExpirationDate(expirationDate,discount.id)  
     } 
