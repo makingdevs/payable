@@ -3,7 +3,7 @@ package com.payable
 class PaymentSchemeService {
 
   def savePaymentScheme(PaymentGroupCommand pgc){
-    Concept concept = Concept.findByDescription(pgc.paymentConcept)
+    Concept concept = Concept.findByDescriptionAndOrganization(pgc.paymentConcept,pgc.organization)
     def paymentScheme = PaymentScheme.findByConcept(concept) ?: new PaymentScheme(
       paymentAmount:pgc.paymentAmount,
       concept:concept,
