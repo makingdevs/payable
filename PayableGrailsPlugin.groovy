@@ -2,7 +2,7 @@ class PayableGrailsPlugin {
 
     // the version or versions of Grails the plugin is designed for
     def groupId = "com.payable"
-    def version = "0.2.38"
+    def version = "0.2.39"
     def grailsVersion = "2.2 > *"
     def pluginExcludes = [
         "grails-app/views/error.gsp"
