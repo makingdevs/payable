@@ -15,12 +15,16 @@ class GenerationOfPaymentService {
       }
       def paymentsForInstance = generatePaymentsForInstance(paymentGroupCommand) 
       def paymentLink = PaymentLink.findByPaymentRef(instance.id) ?: new PaymentLink(paymentRef:instance.id,type:instance.class.simpleName)
-
+      def paymentsOrderedByDate = [] 
+           
       paymentsForInstance.each{ paymentForInstance -> 
         paymentLink.addToPayments(paymentForInstance) 
-        payments << paymentForInstance
+        paymentsOrderedByDate << paymentForInstance
       } 
-
+      
+      paymentsOrderedByDate.sort{ it.dueDate }
+      payments += paymentsOrderedByDate
+            
       paymentLink.save()
     } 
 
