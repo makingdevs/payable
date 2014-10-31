@@ -14,12 +14,12 @@ class AccountingServiceSpec extends Specification {
       def paymentLinkForinstance2 = new PaymentLink(paymentRef:instances[1].id,type:instances[1].class.simpleName)
       def payments = [new Payment(
         paymentDate: new Date(),
-        dueDate: new Date()+7,
+        dueDate: new Date(),
         paymentAmount: 100,
         paymentConcept:"Payment Concept"
       ), new Payment(
         paymentDate: new Date(),
-        dueDate: new Date()+7,
+        dueDate: new Date(),
         paymentAmount: 100,
         paymentConcept:"Payment Concept"
       )]
