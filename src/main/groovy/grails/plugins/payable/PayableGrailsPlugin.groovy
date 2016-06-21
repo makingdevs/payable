@@ -1,15 +1,16 @@
+package grails.plugins.payable
+
 class PayableGrailsPlugin {
 
     // the version or versions of Grails the plugin is designed for
     def groupId = "com.payable"
-    def version = "0.2.44"
     def grailsVersion = "2.2 > *"
     def pluginExcludes = [
         "grails-app/views/error.gsp"
     ]
 
     //def dependsOn = ['amazon-s3':"* > 0.8",'quartz':"* > 1.0"]
-    
+
     // TODO Fill in these fields
     def title = "Payable Plugin" // Headline display name of the plugin
     def author = "Your name"
