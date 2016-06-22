@@ -72,3 +72,6 @@ grails:
 endpoints:
     jmx:
         unique-names: true
+
+coverage:
+  xml: true
