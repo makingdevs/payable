@@ -28,7 +28,7 @@ ext {
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
-    maven { url "http://makingdevs.com:8081/nexus/content/repositories/thirdparty" }
+    //maven { url "http://makingdevs.com:8081/nexus/content/repositories/thirdparty" }
 }
 
 dependencyManagement {
@@ -49,8 +49,8 @@ dependencies {
     compile "org.grails.plugins:cache"
     compile "org.grails.plugins:scaffolding"
 
-    compile "org.grails.plugins:amazon-s3:0.8.2"
-    compile "org.grails.plugins:quartz:1.0-RC13"
+    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.5'
+    compile "org.grails.plugins:profile:0.2.0"
 
     console "org.grails:grails-console"
     profile "org.grails.profiles:web-plugin:3.1.8"
@@ -74,9 +74,9 @@ grailsPublish {
     license {
         name = 'Apache-2.0'
     }
-    title = "My Plugin"
+    title = "Payable"
     desc = "Full plugin description"
-    developers = [johndoe:"John Doe"]
+    developers = [makingDevs:"MakingDevs"]
     portalUser = ""
     portalPassword = ""
 }
