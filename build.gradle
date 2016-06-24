@@ -28,7 +28,7 @@ ext {
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
-    mavenRepo name: "MakingDevs", root: "http://makingdevs.com:8081/nexus/content/repositories/thirdparty"
+    maven { url "http://makingdevs.com:8081/nexus/content/repositories/thirdparty" }
 }
 
 dependencyManagement {
@@ -60,11 +60,7 @@ dependencies {
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
 
-    testCompile "org.grails.plugins:code-coverage:2.0.3-3"
     testCompile "org.spockframework:spock-grails-support:0.7-groovy-2.0"
-
-    testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
-    testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 }
 
 task wrapper(type: Wrapper) {
