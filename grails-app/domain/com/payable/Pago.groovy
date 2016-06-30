@@ -1,7 +1,5 @@
 package com.payable
 
-import org.grails.s3.S3Asset
-
 class Pago {
 
   Date fechaDePago
@@ -18,7 +16,7 @@ class Pago {
   TipoDePago tipoDePago = TipoDePago.TRANSFERENCIA_BANCARIA
   EstatusDePago estatusDePago = EstatusDePago.CREADO
 
-  S3Asset comprobanteDePago
+  String comprobanteDePago
 
   Recargo recargo
 
