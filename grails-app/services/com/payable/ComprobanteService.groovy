@@ -1,22 +1,14 @@
 package com.payable
 
-import org.grails.s3.S3Asset
 import com.payable.TipoDePago
 
 class ComprobanteService {
 
-  def s3AssetService
+  def amazonService
 
   def agregarComprobanteAPago(Long pagoId, file) {
-    S3Asset receipt = new S3Asset()
-    receipt.options.addAsync = 'false'
     Pago pago = Pago.get(pagoId)
-    def tmp = s3AssetService.getNewTmpLocalFile(file.contentType)
-    file.transferTo(tmp)
-    receipt.newFile(tmp)
-    receipt.mimeType = file.contentType
-    s3AssetService.put(receipt)
-    pago.comprobanteDePago = receipt
+    pago.comprobanteDePago = amazonService.uploadFile(file)
     pago.estatusDePago = EstatusDePago.PROCESO
     pago.save()
     pago
@@ -54,7 +46,7 @@ class ComprobanteService {
     pago.referencia = referencia
     pago.estatusDePago = EstatusDePago.PAGADO
     pago.descuentosAplicables.findAll { da ->
-      da.descuentoAplicableStatus = DescuentoAplicableStatus.VIGENTE 
+      da.descuentoAplicableStatus = DescuentoAplicableStatus.VIGENTE
     }*.descuentoAplicableStatus = DescuentoAplicableStatus.APLICADO
     pago.save()
     pago
@@ -63,7 +55,7 @@ class ComprobanteService {
   def rechazarPago(String transactionId) {
     def pago = Pago.findByTransactionId(transactionId)
     if(pago.comprobanteDePago)
-      s3AssetService.delete(pago.comprobanteDePago)
+      amazonService.deleteFile(pago.comprobanteDePago.tokenize("/").last())
     pago.comprobanteDePago = null
     pago.estatusDePago = EstatusDePago.RECHAZADO
     pago.save()
@@ -72,7 +64,7 @@ class ComprobanteService {
 
   def obtenerBytesDeComprobante(pagoId){
     def pago = Pago.get(pagoId)
-    def url = new URL(pago.comprobanteDePago.url())
+    def url = new URL(pago.comprobanteDePago)
     url.getBytes()
   }
 
