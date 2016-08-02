@@ -13,7 +13,7 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
 @PluginSource
-class Application extends GrailsAutoConfiguration extends EnvironmentAware {
+class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static void main(String[] args) {
         GrailsApp.run(Application, args)
     }
