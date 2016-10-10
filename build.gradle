@@ -50,7 +50,7 @@ dependencies {
     compile "org.grails.plugins:scaffolding"
 
     compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.5'
-    compile "com.makingdevs:profile-plugin:0.2.0"
+    compile project(':profile-plugin')
 
     console "org.grails:grails-console"
     profile "org.grails.profiles:web-plugin:3.1.8"
