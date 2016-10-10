@@ -9,25 +9,23 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.PutObjectRequest
 import com.amazonaws.services.s3.model.DeleteObjectRequest
 
-class AmazonService {
-  def grailsApplication
+import grails.config.Config
+import grails.core.support.GrailsConfigurationAware
 
-  String url = ""
-  String accessKey = grailsApplication.aws.accessKey
-  String secretKey = grailsApplication.aws.secretKey
-  String bucket = grailsApplication.aws.bucketName
-  String urlS3 = grailsApplication.aws.domain
+class AmazonService implements GrailsConfigurationAware {
+
+  Config config
 
   String uploadFile(File file){
-    AmazonS3 s3client = new AmazonS3Client(new BasicAWSCredentials(accessKey, secretKey))
+    AmazonS3 s3client = new AmazonS3Client(new BasicAWSCredentials(config.aws.accessKey, config.aws.secretKey))
     try {
-      s3client.putObject(new PutObjectRequest(bucket, file.name, file).withCannedAcl(CannedAccessControlList.PublicRead));
+      s3client.putObject(new PutObjectRequest(config.aws.bucket, file.name, file).withCannedAcl(CannedAccessControlList.PublicRead));
     } catch (AmazonServiceException asEx){
       throw new RuntimeException(asEx.getMessage())
     } catch (AmazonClientException acEx){
       throw new RuntimeException(acEx.getMessage())
     }
-    url = "${bucket}.${urlS3}/${file.name}"
+    "${config.aws.bucket}.${config.aws.urlS3}/${file.name}"
   }
 
   void deleteFile(String object){
@@ -39,5 +37,10 @@ class AmazonService {
     } catch (AmazonClientException acEx) {
       throw new RuntimeException(acEx.getMessage())
     }
+  }
+
+  @Override
+  void setConfiguration(Config config) {
+    this.config = config
   }
 }
