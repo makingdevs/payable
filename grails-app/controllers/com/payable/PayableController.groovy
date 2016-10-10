@@ -2,5 +2,7 @@ package com.payable
 
 class PayableController {
 
-    def index() { }
+  def index() {
+    render "Plugin up!! ${new Date()}"
+  }
 }

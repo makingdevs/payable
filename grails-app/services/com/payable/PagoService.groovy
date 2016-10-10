@@ -37,20 +37,16 @@ class PagoService {
   }
 
   private def findAllPagosInUsuario(def usuario) {
-    def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
+    // def relationships = usuario.properties.findAll { k, v -> v instanceof Set }
     def pagos = []
-    relationships.each { k, v ->
-      try {
-        def field = usuario.class.getDeclaredField( k )
-        ParameterizedType pt = (ParameterizedType) field.getGenericType()
-        Class<?> payableListClass = (Class<?>) pt.getActualTypeArguments().first()
-        if( payableListClass in Payable ) {
-          pagos = v*.pagos.flatten()
-        }
-      } catch(NoSuchFieldException nsfe) {
-        log.info nsfe
-      }
-    }
+    //relationships.each { k, v ->
+    //  def field = usuario.class.getDeclaredField( k )
+    //  ParameterizedType pt = (ParameterizedType) field.getGenericType()
+    //  Class<?> payableListClass = (Class<?>) pt.getActualTypeArguments().first()
+    //  if( payableListClass in Payable ) {
+    //    pagos = v*.pagos.flatten()
+    //  }
+    //}
     pagos
   }
 
