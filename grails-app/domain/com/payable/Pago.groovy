@@ -1,5 +1,7 @@
 package com.payable
 
+import com.makingdevs.S3Asset
+
 class Pago {
 
   Date fechaDePago
@@ -16,7 +18,7 @@ class Pago {
   TipoDePago tipoDePago = TipoDePago.TRANSFERENCIA_BANCARIA
   EstatusDePago estatusDePago = EstatusDePago.CREADO
 
-  String comprobanteDePago
+  S3Asset comprobanteDePago
 
   Recargo recargo
 
